@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --navy: #1e3a6e;
+  --navy-dark: #0f2040;
+  --amber: #f59e0b;
+  --amber-light: #fbbf24;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Sora', sans-serif;
+}
+
+.btn-primary {
+  @apply bg-amber-500 hover:bg-amber-600 text-navy-900 font-semibold py-3 px-6 rounded-lg transition-all duration-200 font-outfit;
+}
+
+.btn-navy {
+  @apply bg-navy-700 hover:bg-navy-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200;
+}
+
+.card {
+  @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6;
+}
+
+.progress-bar {
+  @apply h-2 bg-gray-200 rounded-full overflow-hidden;
+}
+
+.progress-fill {
+  @apply h-full bg-amber-500 rounded-full transition-all duration-500;
+}
