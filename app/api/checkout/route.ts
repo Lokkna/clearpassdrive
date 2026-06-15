@@ -1,13 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe, COURSE_PRICE, COURSE_NAME } from '@/lib/stripe'
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { createClient } from '@supabase/supabase-js'
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const authHeader = req.headers.get('Authorization')
+    const token = authHeader?.replace('Bearer ', '')
 
-    if (!user) {
+    if (!token) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+    }
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+
+    const { data: { user }, error } = await supabase.auth.getUser(token)
+
+    if (error || !user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
 
