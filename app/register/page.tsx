@@ -31,8 +31,16 @@ export default function RegisterPage() {
       setError(signUpError.message)
       setLoading(false)
       return
+
+      
     }
 
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+    if (signInError) {
+      setError(signInError.message)
+      setLoading(false)
+      return
+    }
     // Redirect to checkout
     router.push('/checkout')
   }
