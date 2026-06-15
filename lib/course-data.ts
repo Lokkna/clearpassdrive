@@ -1673,3 +1673,27 @@ export const chapters: Chapter[] = [
     ],
   },
 ]
+export const PASSING_SCORE = 70
+
+export const examQuestions = [
+  { id: 1, question: "What is the minimum following distance recommended under normal driving conditions in California?", options: ["1 second", "2 seconds", "3 seconds", "5 seconds"], correct: 2, chapter: 2 },
+  { id: 2, question: "Under California's Basic Speed Law, you may receive a speeding ticket even if driving below the posted speed limit.", options: ["True", "False", "Only on freeways", "Only in school zones"], correct: 0, chapter: 1 },
+  { id: 3, question: "What is the legal BAC limit for adult drivers in California?", options: ["0.04%", "0.06%", "0.08%", "0.10%"], correct: 2, chapter: 7 },
+  { id: 4, question: "When approaching a pedestrian in a crosswalk, California law requires you to:", options: ["Slow down and proceed carefully", "Yield and stop if necessary", "Sound your horn to warn them", "Only yield at marked crosswalks"], correct: 1, chapter: 5 },
+  { id: 5, question: "Which is NOT considered a type of driver distraction?", options: ["Talking on a hands-free phone", "Eating while driving", "Checking mirrors regularly", "Adjusting the radio"], correct: 2, chapter: 4 },
+  { id: 6, question: "California's Move Over Law requires drivers to move over or slow down when passing:", options: ["Only police vehicles", "Only emergency vehicles", "Any stopped emergency, tow, or Caltrans vehicle with lights activated", "Only on freeways"], correct: 2, chapter: 5 },
+  { id: 7, question: "A driver's license in California is considered a:", options: ["Constitutional right", "Legal privilege", "Federal entitlement", "Permanent right"], correct: 1, chapter: 1 },
+  { id: 8, question: "What should you do if your vehicle begins to hydroplane?", options: ["Brake hard immediately", "Steer sharply to the side", "Ease off the accelerator and hold the wheel straight", "Accelerate to regain traction"], correct: 2, chapter: 10 },
+  { id: 9, question: "When must you use your headlights in California?", options: ["Only at night", "30 minutes after sunset to 30 minutes before sunrise and when visibility is under 1,000 feet", "Only in rain or fog", "Only on freeways at night"], correct: 1, chapter: 8 },
+  { id: 10, question: "What is the minimum clearance required when passing a bicyclist in California?", options: ["1 foot", "2 feet", "3 feet", "5 feet"], correct: 2, chapter: 9 },
+  { id: 11, question: "Road rage is best avoided by:", options: ["Asserting your right of way", "Making eye contact with aggressive drivers", "Not engaging and creating distance", "Matching the other driver's speed"], correct: 2, chapter: 3 },
+  { id: 12, question: "How often can a California driver use traffic school to mask a point?", options: ["Once per year", "Once every 18 months", "Once every 3 years", "Unlimited times"], correct: 1, chapter: 1 },
+  { id: 13, question: "California's implied consent law means:", options: ["You consent to random vehicle searches", "You agree to submit to chemical testing if arrested for DUI", "You agree to pay all traffic fines", "You consent to being recorded by police"], correct: 1, chapter: 7 },
+  { id: 14, question: "At a four-way stop with two vehicles arriving simultaneously, who has the right of way?", options: ["The vehicle on the left", "The vehicle on the right", "The larger vehicle", "The faster vehicle"], correct: 1, chapter: 5 },
+  { id: 15, question: "Defensive driving means:", options: ["Driving slowly at all times", "Assuming other drivers will make mistakes and preparing accordingly", "Only applies to new drivers", "Requires special equipment"], correct: 1, chapter: 2 },
+  { id: 16, question: "California minimum auto insurance liability requirement is:", options: ["$10,000/$20,000/$5,000", "$15,000/$30,000/$5,000", "$25,000/$50,000/$10,000", "$50,000/$100,000/$25,000"], correct: 1, chapter: 6 },
+  { id: 17, question: "When driving in fog, you should use:", options: ["High beams", "Hazard lights while moving", "Low beams and reduce speed", "No lights to avoid glare"], correct: 2, chapter: 10 },
+  { id: 18, question: "Texting at 55 mph means you travel approximately how far without looking at the road?", options: ["The length of a car", "Half a city block", "The length of a football field", "A quarter mile"], correct: 2, chapter: 4 },
+  { id: 19, question: "Which statement about marijuana and driving in California is correct?", options: ["It is legal so safe to drive after using", "A per se BAC limit applies to THC", "DUI marijuana carries same penalties as alcohol DUI", "Only affects driving in large amounts"], correct: 2, chapter: 7 },
+  { id: 20, question: "You are responsible for ensuring all passengers under what age are properly buckled?", options: ["Under 8", "Under 12", "Under 16", "Under 18"], correct: 2, chapter: 6 }
+]
