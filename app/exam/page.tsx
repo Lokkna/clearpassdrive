@@ -25,7 +25,7 @@ export default function ExamPage() {
       setUser(user)
 
       const { data: enrollment } = await supabase
-        .from('enrollments').select('*').eq('user_id', user.id).single()
+        .from('enrollments').select('*').eq('user_id', user.id).eq('paid', true).order('created_at', { ascending: false }).limit(1).single()
 
       if (!enrollment?.paid) { router.push('/checkout'); return }
       if (enrollment?.exam_passed) { router.push('/certificate'); return }
@@ -79,7 +79,7 @@ export default function ExamPage() {
       exam_score: score,
       exam_attempts: (enrollment?.exam_attempts || 0) + 1,
       exam_completed_at: new Date().toISOString(),
-    }).eq('user_id', user.id)
+    }).eq('id', enrollment?.id)
 
     if (passed) {
       await fetch('/api/send-email', {

@@ -23,14 +23,16 @@ export default function CheckoutPage() {
       }
       setUserEmail(user.email || '')
 
-      // Check if already paid
-      const { data: enrollment } = await supabase
+      // Check if already paid (get most recent paid enrollment)
+      const { data: enrollments } = await supabase
         .from('enrollments')
         .select('paid')
         .eq('user_id', user.id)
-        .single()
+        .eq('paid', true)
+        .order('created_at', { ascending: false })
+        .limit(1)
 
-      if (enrollment?.paid) {
+      if (enrollments && enrollments.length > 0) {
         router.push('/course')
         return
       }

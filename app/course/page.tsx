@@ -21,7 +21,7 @@ function CourseContent() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { router.push('/login'); return }
       setUser(user)
-      const { data: enrollment } = await supabase.from('enrollments').select('*').eq('user_id', user.id).single()
+      const { data: enrollment } = await supabase.from('enrollments').select('*').eq('user_id', user.id).eq('paid', true).order('created_at', { ascending: false }).limit(1).single()
       if (!enrollment?.paid) { router.push('/checkout'); return }
       setEnrollment(enrollment)
       const chapterParam = searchParams.get('chapter')
@@ -36,7 +36,7 @@ function CourseContent() {
     setMarking(true)
     const newProgress = { ...(enrollment?.progress || {}), [currentChapter]: true }
     const nextChapter = currentChapter < 10 ? currentChapter + 1 : currentChapter
-    const { data } = await supabase.from('enrollments').update({ progress: newProgress, current_chapter: nextChapter }).eq('user_id', user.id).select().single()
+    const { data } = await supabase.from('enrollments').update({ progress: newProgress, current_chapter: nextChapter }).eq('id', enrollment?.id).select().single()
     setEnrollment(data)
     setMarking(false)
     const completedCount = Object.keys(newProgress).filter(k => newProgress[k]).length
