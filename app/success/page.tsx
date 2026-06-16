@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, Suspense } from 'react'
+import { useEffect, useState, useRef, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -9,8 +9,12 @@ function SuccessContent() {
   const sessionId = searchParams.get('session_id')
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
 
+  const called = useRef(false)
+
   useEffect(() => {
     if (!sessionId) { router.push('/'); return }
+    if (called.current) return
+    called.current = true
     async function completeEnrollment() {
       try {
         const res = await fetch('/api/complete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId }) })
