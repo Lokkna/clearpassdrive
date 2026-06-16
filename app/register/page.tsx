@@ -31,18 +31,18 @@ export default function RegisterPage() {
       setError(signUpError.message)
       setLoading(false)
       return
-
-      
     }
 
+    // Sign in immediately so the session cookie is set before redirecting
     const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
     if (signInError) {
       setError(signInError.message)
       setLoading(false)
       return
     }
-    // Redirect to checkout
-    router.push('/checkout')
+
+    // Redirect to intake form
+    router.push('/intake')
   }
 
   return (

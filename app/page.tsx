@@ -28,7 +28,7 @@ export default function HomePage() {
       <section style={{ backgroundColor: '#0f2040', paddingBottom: '80px', paddingTop: '80px' }}>
         <div className="max-w-4xl mx-auto px-6 text-center">
           <div style={{ display: 'inline-block', backgroundColor: '#1e3a6e', color: '#f59e0b', fontSize: '0.8rem', fontWeight: 600, padding: '4px 14px', borderRadius: '20px', marginBottom: '24px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-            DMV-Licensed Traffic Violator School · License #E1393
+            DMV-Licensed Traffic Violator School · License License Pending
           </div>
           <h1 style={{ fontFamily: 'Sora, sans-serif', color: '#ffffff', fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 800, lineHeight: 1.15, marginBottom: '20px' }}>
             Clear your ticket.<br />
@@ -51,7 +51,7 @@ export default function HomePage() {
       {/* Trust bar */}
       <section style={{ backgroundColor: '#1e3a6e', padding: '20px 0' }}>
         <div className="max-w-4xl mx-auto px-6 flex items-center justify-center gap-8 flex-wrap">
-          {['✓ DMV-Licensed #E1393', '✓ Self-Paced Online', '✓ Certificate Same Day', '✓ 70% to Pass'].map(item => (
+          {['✓ DMV-Licensed License Pending', '✓ Self-Paced Online', '✓ Certificate Same Day', '✓ 70% to Pass'].map(item => (
             <span key={item} style={{ color: '#f59e0b', fontSize: '0.85rem', fontWeight: 600 }}>{item}</span>
           ))}
         </div>
@@ -115,7 +115,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer style={{ backgroundColor: '#0a1628', padding: '40px 24px', textAlign: 'center' }}>
         <div style={{ fontFamily: 'Sora, sans-serif', color: '#f59e0b', fontWeight: 700, marginBottom: '8px' }}>ClearPass Drive</div>
-        <p style={{ color: '#475569', fontSize: '0.8rem', marginBottom: '4px' }}>NMG Enterprises — California DMV-Licensed Traffic Violator School · License #E1393</p>
+        <p style={{ color: '#475569', fontSize: '0.8rem', marginBottom: '4px' }}>NMG Enterprises — California DMV-Licensed Traffic Violator School · License License Pending</p>
         <p style={{ color: '#334155', fontSize: '0.75rem' }}>© {new Date().getFullYear()} NMG Enterprises. All rights reserved.</p>
       </footer>
     </div>

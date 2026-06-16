@@ -32,6 +32,19 @@ export default function CheckoutPage() {
 
       if (enrollment?.paid) {
         router.push('/course')
+        return
+      }
+
+      // Check citation intake is complete
+      const { data: citation } = await supabase
+        .from('citations')
+        .select('id')
+        .eq('user_id', user.id)
+        .single()
+
+      if (!citation) {
+        router.push('/intake')
+        return
       }
     }
     getUser()
@@ -87,7 +100,7 @@ export default function CheckoutPage() {
               <span style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, color: '#0f2040' }}>$24.95</span>
             </div>
             <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '12px' }}>
-              {['10 chapters', '20-question final exam', 'Completion certificate', 'DMV-licensed school #E1393'].map(item => (
+              {['10 chapters', '20-question final exam', 'Completion certificate', 'DMV-licensed school License Pending'].map(item => (
                 <div key={item} style={{ color: '#64748b', fontSize: '0.85rem', padding: '2px 0', display: 'flex', gap: '8px' }}>
                   <span style={{ color: '#f59e0b' }}>✓</span> {item}
                 </div>

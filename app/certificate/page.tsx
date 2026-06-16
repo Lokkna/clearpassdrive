@@ -92,7 +92,7 @@ export default function CertificatePage() {
             </span>
           </div>
           <div style={{ color: '#64748b', fontSize: '0.8rem', marginBottom: '32px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-            California Traffic Violator School · DMV License #E1393
+            California Traffic Violator School · DMV License License Pending
           </div>
 
           <div style={{ fontFamily: 'Georgia, serif', color: '#475569', fontSize: '1rem', marginBottom: '8px' }}>
@@ -143,7 +143,7 @@ export default function CertificatePage() {
               <div style={{ borderTop: '1.5px solid #0f2040', paddingTop: '8px', width: '180px', margin: '0 auto', color: '#0f2040', fontWeight: 600, fontSize: '0.85rem' }}>
                 NMG Enterprises
               </div>
-              <div style={{ color: '#94a3b8', fontSize: '0.75rem' }}>TVS License #E1393</div>
+              <div style={{ color: '#94a3b8', fontSize: '0.75rem' }}>TVS License License Pending</div>
             </div>
           </div>
         </div>

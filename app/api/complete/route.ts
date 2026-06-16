@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
           <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; background: #ffffff;">
             <div style="background: #0f2040; padding: 32px 40px; text-align: center;">
               <h1 style="color: #f59e0b; font-size: 1.5rem; margin: 0;">ClearPass Drive</h1>
-              <p style="color: #94a3b8; margin: 4px 0 0; font-size: 0.85rem;">California Traffic Violator School · License #E1393</p>
+              <p style="color: #94a3b8; margin: 4px 0 0; font-size: 0.85rem;">California Traffic Violator School · License License Pending</p>
             </div>
             <div style="padding: 40px;">
               <h2 style="color: #0f2040; margin-top: 0;">You're enrolled! 🎉</h2>
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
             </div>
             <div style="padding: 24px 40px; border-top: 1px solid #e2e8f0; color: #94a3b8; font-size: 0.8rem;">
               <p style="margin: 0;">Questions? Email us at support@clearpassdrive.com</p>
-              <p style="margin: 4px 0 0;">NMG Enterprises · California DMV Licensed TVS #E1393</p>
+              <p style="margin: 4px 0 0;">NMG Enterprises · California DMV Licensed TVS License Pending</p>
             </div>
           </div>
         `,
