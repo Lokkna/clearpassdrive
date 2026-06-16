@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
           <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; background: #ffffff;">
             <div style="background: #0f2040; padding: 32px 40px; text-align: center;">
               <h1 style="color: #f59e0b; font-size: 1.5rem; margin: 0;">ClearPass Drive</h1>
-              <p style="color: #94a3b8; margin: 4px 0 0; font-size: 0.85rem;">California Traffic Violator School · License License Pending</p>
+              <p style="color: #94a3b8; margin: 4px 0 0; font-size: 0.85rem;">California Traffic Violator School · License Pending</p>
             </div>
             <div style="padding: 40px;">
               <h2 style="color: #0f2040; margin-top: 0;">You're enrolled! 🎉</h2>

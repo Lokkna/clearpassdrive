@@ -73,19 +73,27 @@ export default function ExamPage() {
   async function submitResults() {
     setSubmitting(true)
     const passed = score >= PASSING_SCORE
+    const completedAt = new Date().toISOString()
 
     await supabase.from('enrollments').update({
       exam_passed: passed,
       exam_score: score,
       exam_attempts: (enrollment?.exam_attempts || 0) + 1,
-      exam_completed_at: new Date().toISOString(),
+      exam_completed_at: completedAt,
     }).eq('id', enrollment?.id)
 
     if (passed) {
       await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'passed', email: user.email, score }),
+        body: JSON.stringify({
+          type: 'passed',
+          email: user.email,
+          score,
+          fullName: user.user_metadata?.full_name || user.email,
+          userId: user.id,
+          completedAt,
+        }),
       })
     }
 

@@ -1675,6 +1675,30 @@ export const chapters: Chapter[] = [
 ]
 export const PASSING_SCORE = 70
 
+// Minimum dwell time per chapter — prevents instant click-through.
+// Note on compliance basis: 13 CCR §345.30(b)(2) satisfies internet-modality
+// TVS courses via a 42,500-word minimum (this course is 50,044 words) rather
+// than a fixed per-chapter clock. Enforcing a reasonable per-chapter minimum
+// read time is not separately mandated for this modality, but it guards
+// against rapid click-through and supports the "structured learning
+// atmosphere" language in §345.30(a). Minutes are derived from each
+// chapter's actual word count at an assumed reading speed, so they stay in
+// sync automatically if chapter content is edited later.
+export const READING_WPM = 200
+export const MIN_CHAPTER_MINUTES_FLOOR = 3
+
+export function getChapterWordCount(chapterId: number): number {
+  const chapter = chapters.find(c => c.id === chapterId)
+  if (!chapter) return 0
+  return chapter.content.join(' ').split(/\s+/).filter(Boolean).length
+}
+
+export function getChapterMinSeconds(chapterId: number): number {
+  const words = getChapterWordCount(chapterId)
+  const minutes = Math.max(MIN_CHAPTER_MINUTES_FLOOR, Math.ceil(words / READING_WPM))
+  return minutes * 60
+}
+
 export const examQuestions = [
   { id: 1, question: "What is the minimum following distance recommended under normal driving conditions in California?", options: ["1 second", "2 seconds", "3 seconds", "5 seconds"], correct: 2, chapter: 2 },
   { id: 2, question: "Under California's Basic Speed Law, you may receive a speeding ticket even if driving below the posted speed limit.", options: ["True", "False", "Only on freeways", "Only in school zones"], correct: 0, chapter: 1 },

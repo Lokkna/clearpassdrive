@@ -1,7 +1,8 @@
 'use client'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { generateCertificatePDF, buildCertId } from '@/lib/certificate-pdf'
 
 export default function CertificatePage() {
   const [user, setUser] = useState<any>(null)
@@ -31,8 +32,14 @@ export default function CertificatePage() {
     load()
   }, [])
 
-  function handlePrint() {
-    window.print()
+  function handleDownload() {
+    const doc = generateCertificatePDF({
+      fullName,
+      examScore: enrollment?.exam_score ?? 0,
+      completedDate,
+      certId,
+    })
+    doc.save('ClearPassDrive-Certificate.pdf')
   }
 
   if (loading) {
@@ -49,7 +56,7 @@ export default function CertificatePage() {
     ? new Date(enrollment.exam_completed_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
     : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 
-  const certId = `CPD-${user?.id?.slice(0, 8).toUpperCase()}-${new Date().getFullYear()}`
+  const certId = buildCertId(user?.id || '', new Date().getFullYear())
 
   return (
     <div style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
@@ -58,8 +65,8 @@ export default function CertificatePage() {
         <span style={{ fontFamily: 'Sora, sans-serif', color: '#f59e0b', fontWeight: 700 }}>ClearPass Drive</span>
         <div style={{ display: 'flex', gap: '12px' }}>
           <a href="/dashboard" style={{ color: '#94a3b8', fontSize: '0.9rem', textDecoration: 'none' }}>← Dashboard</a>
-          <button onClick={handlePrint} style={{ backgroundColor: '#f59e0b', color: '#0f2040', fontWeight: 700, padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.9rem' }}>
-            Download / Print PDF
+          <button onClick={handleDownload} style={{ backgroundColor: '#f59e0b', color: '#0f2040', fontWeight: 700, padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.9rem' }}>
+            Download PDF
           </button>
         </div>
       </div>
@@ -92,7 +99,7 @@ export default function CertificatePage() {
             </span>
           </div>
           <div style={{ color: '#64748b', fontSize: '0.8rem', marginBottom: '32px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-            California Traffic Violator School · DMV License License Pending
+            California Traffic Violator School · DMV License Pending
           </div>
 
           <div style={{ fontFamily: 'Georgia, serif', color: '#475569', fontSize: '1rem', marginBottom: '8px' }}>
@@ -143,7 +150,7 @@ export default function CertificatePage() {
               <div style={{ borderTop: '1.5px solid #0f2040', paddingTop: '8px', width: '180px', margin: '0 auto', color: '#0f2040', fontWeight: 600, fontSize: '0.85rem' }}>
                 NMG Enterprises
               </div>
-              <div style={{ color: '#94a3b8', fontSize: '0.75rem' }}>TVS License License Pending</div>
+              <div style={{ color: '#94a3b8', fontSize: '0.75rem' }}>TVS License Pending</div>
             </div>
           </div>
         </div>

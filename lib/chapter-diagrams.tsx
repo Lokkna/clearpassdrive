@@ -17,8 +17,8 @@ export const ChapterDiagram = ({ chapterId }: { chapterId: number }) => {
           <g key={label} transform={`translate(${x}, 50)`}>
             <rect x="0" y="0" width="110" height="130" rx="8" fill="#1e3a6e"/>
             <rect x="10" y="10" width="90" height="90" rx="6" fill="white"/>
-            <text x="55" y="42" textAnchor="middle" fontSize="10" fill="#374151" fontFamily="Outfit, sans-serif" fontWeight="600">SPEED</text>
-            <text x="55" y="44" textAnchor="middle" fontSize="10" fill="#374151" fontFamily="Outfit, sans-serif" fontWeight="600">LIMIT</text>
+            <text x="55" y="36" textAnchor="middle" fontSize="10" fill="#374151" fontFamily="Outfit, sans-serif" fontWeight="600">SPEED</text>
+            <text x="55" y="48" textAnchor="middle" fontSize="10" fill="#374151" fontFamily="Outfit, sans-serif" fontWeight="600">LIMIT</text>
             <text x="55" y="82" textAnchor="middle" fontSize="38" fill="#0f2040" fontFamily="Sora, sans-serif" fontWeight="800">{speed}</text>
             <text x="55" y="108" textAnchor="middle" fontSize="11" fill={color} fontFamily="Outfit, sans-serif" fontWeight="700">{label}</text>
             <text x="55" y="125" textAnchor="middle" fontSize="9" fill="#94a3b8" fontFamily="Outfit, sans-serif">{sub}</text>
@@ -86,8 +86,8 @@ export const ChapterDiagram = ({ chapterId }: { chapterId: number }) => {
     ),
 
     4: ( // Distracted Driving — Football Field
-      <svg width="100%" viewBox="0 0 680 210" role="img" aria-label="Texting at 55mph covers a football field blind">
-        <rect width="680" height="210" fill="#0f2040" rx="12"/>
+      <svg width="100%" viewBox="0 0 680 230" role="img" aria-label="Texting at 55mph covers a football field blind">
+        <rect width="680" height="230" fill="#0f2040" rx="12"/>
         <text x="340" y="28" textAnchor="middle" fontSize="13" fill="#94a3b8" fontFamily="Outfit, sans-serif">TEXTING AT 55 MPH FOR 5 SECONDS =</text>
         {/* Football field */}
         <rect x="40" y="50" width="600" height="80" rx="6" fill="#166534"/>
@@ -107,47 +107,48 @@ export const ChapterDiagram = ({ chapterId }: { chapterId: number }) => {
         {/* Dotted path */}
         <line x1="100" y1="80" x2="640" y2="80" stroke="#ef4444" strokeWidth="3" strokeDasharray="12 8"/>
         <text x="340" y="80" textAnchor="middle" fontSize="28" fill="#ef4444">⚠</text>
-        <text x="340" y="170" textAnchor="middle" fontSize="22" fill="#ef4444" fontFamily="Sora, sans-serif" fontWeight="800">THE LENGTH OF A FOOTBALL FIELD — EYES OFF THE ROAD</text>
-        <text x="340" y="195" textAnchor="middle" fontSize="11" fill="#64748b" fontFamily="Outfit, sans-serif">Hands-free calls still impair driving for up to 27 seconds after the call ends.</text>
+        <text x="340" y="172" textAnchor="middle" fontSize="24" fill="#ef4444" fontFamily="Sora, sans-serif" fontWeight="800">THE LENGTH OF A FOOTBALL FIELD</text>
+        <text x="340" y="200" textAnchor="middle" fontSize="24" fill="#ef4444" fontFamily="Sora, sans-serif" fontWeight="800">— EYES OFF THE ROAD</text>
+        <text x="340" y="220" textAnchor="middle" fontSize="11" fill="#64748b" fontFamily="Outfit, sans-serif">Hands-free calls still impair driving for up to 27 seconds after the call ends.</text>
       </svg>
     ),
 
     5: ( // Right of Way — Four Way Stop
-      <svg width="100%" viewBox="0 0 680 220" role="img" aria-label="Four-way stop right of way rule">
-        <rect width="680" height="220" fill="#0f2040" rx="12"/>
-        <text x="340" y="25" textAnchor="middle" fontSize="13" fill="#94a3b8" fontFamily="Outfit, sans-serif">FOUR-WAY STOP: WHO GOES FIRST?</text>
+      <svg width="100%" viewBox="0 0 680 240" role="img" aria-label="Four-way stop right of way rule">
+        <rect width="680" height="240" fill="#0f2040" rx="12"/>
+        <text x="340" y="22" textAnchor="middle" fontSize="13" fill="#94a3b8" fontFamily="Outfit, sans-serif">FOUR-WAY STOP: WHO GOES FIRST?</text>
         {/* Roads */}
-        <rect x="280" y="35" width="120" height="180" fill="#1e3a6e" rx="4"/>
-        <rect x="60" y="95" width="560" height="50" fill="#1e3a6e" rx="4"/>
-        <line x1="340" y1="35" x2="340" y2="95" stroke="#64748b" strokeWidth="1" strokeDasharray="8 6"/>
-        <line x1="340" y1="145" x2="340" y2="215" stroke="#64748b" strokeWidth="1" strokeDasharray="8 6"/>
-        <line x1="60" y1="120" x2="280" y2="120" stroke="#64748b" strokeWidth="1" strokeDasharray="8 6"/>
-        <line x1="400" y1="120" x2="620" y2="120" stroke="#64748b" strokeWidth="1" strokeDasharray="8 6"/>
+        <rect x="280" y="55" width="120" height="170" fill="#1e3a6e" rx="4"/>
+        <rect x="60" y="115" width="560" height="50" fill="#1e3a6e" rx="4"/>
+        <line x1="340" y1="55" x2="340" y2="115" stroke="#64748b" strokeWidth="1" strokeDasharray="8 6"/>
+        <line x1="340" y1="165" x2="340" y2="225" stroke="#64748b" strokeWidth="1" strokeDasharray="8 6"/>
+        <line x1="60" y1="140" x2="280" y2="140" stroke="#64748b" strokeWidth="1" strokeDasharray="8 6"/>
+        <line x1="400" y1="140" x2="620" y2="140" stroke="#64748b" strokeWidth="1" strokeDasharray="8 6"/>
         {/* Green car going */}
-        <g transform="translate(308, 145)">
+        <g transform="translate(308, 165)">
           <rect x="0" y="0" width="40" height="60" rx="6" fill="#10b981"/>
           <rect x="6" y="6" width="28" height="18" rx="3" fill="#6ee7b7" opacity="0.6"/>
           <text x="20" y="45" textAnchor="middle" fontSize="8" fill="white" fontFamily="Outfit, sans-serif" fontWeight="700">1st</text>
         </g>
-        <circle cx="328" cy="158" r="14" fill="#10b981" stroke="white" strokeWidth="2"/>
-        <text x="328" y="163" textAnchor="middle" fontSize="10" fill="white" fontFamily="Outfit, sans-serif" fontWeight="700">GO</text>
+        <circle cx="328" cy="178" r="14" fill="#10b981" stroke="white" strokeWidth="2"/>
+        <text x="328" y="183" textAnchor="middle" fontSize="10" fill="white" fontFamily="Outfit, sans-serif" fontWeight="700">GO</text>
         {/* Gray waiting cars */}
-        <g transform="translate(308, 40)">
+        <g transform="translate(308, 60)">
           <rect x="0" y="0" width="40" height="50" rx="6" fill="#475569"/>
           <circle cx="20" cy="-12" r="12" fill="#475569" stroke="#64748b" strokeWidth="1.5"/>
           <text x="20" y="-7" textAnchor="middle" fontSize="9" fill="#94a3b8" fontFamily="Outfit, sans-serif">wait</text>
         </g>
-        <g transform="translate(80, 100)">
+        <g transform="translate(80, 120)">
           <rect x="0" y="0" width="50" height="38" rx="6" fill="#475569"/>
           <circle cx="-12" cy="19" r="12" fill="#475569" stroke="#64748b" strokeWidth="1.5"/>
           <text x="-12" y="24" textAnchor="middle" fontSize="9" fill="#94a3b8" fontFamily="Outfit, sans-serif">wait</text>
         </g>
-        <g transform="translate(490, 100)">
+        <g transform="translate(490, 120)">
           <rect x="0" y="0" width="50" height="38" rx="6" fill="#475569"/>
           <circle cx="62" cy="19" r="12" fill="#475569" stroke="#64748b" strokeWidth="1.5"/>
           <text x="62" y="24" textAnchor="middle" fontSize="9" fill="#94a3b8" fontFamily="Outfit, sans-serif">wait</text>
         </g>
-        <text x="340" y="208" textAnchor="middle" fontSize="12" fill="#64748b" fontFamily="Outfit, sans-serif">First to arrive = first to go. Tie? Yield to the driver on your right.</text>
+        <text x="340" y="228" textAnchor="middle" fontSize="12" fill="#64748b" fontFamily="Outfit, sans-serif">First to arrive = first to go. Tie? Yield to the driver on your right.</text>
       </svg>
     ),
 
@@ -174,8 +175,8 @@ export const ChapterDiagram = ({ chapterId }: { chapterId: number }) => {
     ),
 
     7: ( // DUI — BAC Chart
-      <svg width="100%" viewBox="0 0 680 210" role="img" aria-label="BAC legal limits by driver type">
-        <rect width="680" height="210" fill="#0f2040" rx="12"/>
+      <svg width="100%" viewBox="0 0 680 230" role="img" aria-label="BAC legal limits by driver type">
+        <rect width="680" height="230" fill="#0f2040" rx="12"/>
         <text x="340" y="28" textAnchor="middle" fontSize="13" fill="#94a3b8" fontFamily="Outfit, sans-serif">CALIFORNIA DUI BLOOD ALCOHOL LIMITS</text>
         {[
           { x: 60, type: 'Standard\nDriver', bac: '0.08%', color: '#f59e0b', bar: 0.6 },
@@ -193,7 +194,7 @@ export const ChapterDiagram = ({ chapterId }: { chapterId: number }) => {
             ))}
           </g>
         ))}
-        <text x="340" y="198" textAnchor="middle" fontSize="11" fill="#64748b" fontFamily="Outfit, sans-serif">Impairment begins well below legal limits. The safest choice is zero alcohol before driving.</text>
+        <text x="340" y="222" textAnchor="middle" fontSize="11" fill="#64748b" fontFamily="Outfit, sans-serif">Impairment begins well below legal limits. The safest choice is zero alcohol before driving.</text>
       </svg>
     ),
 
@@ -236,8 +237,8 @@ export const ChapterDiagram = ({ chapterId }: { chapterId: number }) => {
     ),
 
     9: ( // Pedestrian Safety — Speed vs Fatality
-      <svg width="100%" viewBox="0 0 680 210" role="img" aria-label="Vehicle speed vs pedestrian fatality risk">
-        <rect width="680" height="210" fill="#0f2040" rx="12"/>
+      <svg width="100%" viewBox="0 0 680 260" role="img" aria-label="Vehicle speed vs pedestrian fatality risk">
+        <rect width="680" height="260" fill="#0f2040" rx="12"/>
         <text x="340" y="28" textAnchor="middle" fontSize="13" fill="#94a3b8" fontFamily="Outfit, sans-serif">SPEED VS. PEDESTRIAN FATALITY RISK</text>
         {[
           { x: 80, mph: '20 mph', risk: '10%', height: 20, color: '#10b981' },
@@ -250,11 +251,11 @@ export const ChapterDiagram = ({ chapterId }: { chapterId: number }) => {
             <rect x="20" y={130 - height} width="80" height={height} rx="4" fill={color}/>
             <rect x="20" y="20" width="80" height="110" rx="4" fill="none" stroke="#374151" strokeWidth="1"/>
             <text x="60" y="148" textAnchor="middle" fontSize="11" fill="#94a3b8" fontFamily="Outfit, sans-serif">{mph}</text>
-            <text x="60" y="162" textAnchor="middle" fontSize="18" fill={color} fontFamily="Sora, sans-serif" fontWeight="800">{risk}</text>
-            <text x="60" y="175" textAnchor="middle" fontSize="9" fill="#64748b" fontFamily="Outfit, sans-serif">fatal risk</text>
+            <text x="60" y="170" textAnchor="middle" fontSize="18" fill={color} fontFamily="Sora, sans-serif" fontWeight="800">{risk}</text>
+            <text x="60" y="188" textAnchor="middle" fontSize="9" fill="#64748b" fontFamily="Outfit, sans-serif">fatal risk</text>
           </g>
         ))}
-        <text x="340" y="200" textAnchor="middle" fontSize="11" fill="#64748b" fontFamily="Outfit, sans-serif">The difference between 25 and 35 mph can mean the difference between life and death for a pedestrian.</text>
+        <text x="340" y="250" textAnchor="middle" fontSize="11" fill="#64748b" fontFamily="Outfit, sans-serif">The difference between 25 and 35 mph can mean the difference between life and death for a pedestrian.</text>
       </svg>
     ),
 
