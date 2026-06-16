@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { chapters } from '@/lib/course-data'
+import { ChapterDiagram } from '@/lib/chapter-diagrams'
 
 function CourseContent() {
   const [user, setUser] = useState<any>(null)
@@ -80,6 +81,7 @@ function CourseContent() {
               {isComplete && <span style={{ backgroundColor: '#dcfce7', color: '#16a34a', fontWeight: 600, fontSize: '0.75rem', padding: '3px 10px', borderRadius: '20px' }}>Complete</span>}
             </div>
             <h1 style={{ fontFamily: 'Sora, sans-serif', color: '#0f2040', fontSize: '1.75rem', fontWeight: 700, marginBottom: '32px' }}>{chapter.title}</h1>
+            <ChapterDiagram chapterId={currentChapter} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '40px' }}>
               {chapter.content.map((paragraph, i) => (
                 <p key={i} style={{ color: '#374151', lineHeight: 1.8, fontSize: '1rem', margin: 0 }}>{paragraph}</p>
