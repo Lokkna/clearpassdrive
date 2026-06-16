@@ -27,10 +27,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'No user ID' })
     }
 
-    // Upsert enrollment
+    // Idempotency check — avoid duplicate enrollment rows for the same Stripe session
+    const { data: existing } = await supabaseAdmin
+      .from('enrollments')
+      .select('id')
+      .eq('stripe_session_id', sessionId)
+      .limit(1)
+
+    if (existing && existing.length > 0) {
+      return NextResponse.json({ success: true })
+    }
+
+    // Insert new enrollment (per-incident model — one row per payment)
     const { error: enrollError } = await supabaseAdmin
       .from('enrollments')
-      .upsert({
+      .insert({
         user_id: userId,
         paid: true,
         paid_at: new Date().toISOString(),
@@ -40,7 +51,7 @@ export async function POST(req: NextRequest) {
         current_chapter: 1,
         exam_passed: false,
         exam_attempts: 0,
-      }, { onConflict: 'user_id' })
+      })
 
     if (enrollError) {
       console.error('Enrollment error:', enrollError)
