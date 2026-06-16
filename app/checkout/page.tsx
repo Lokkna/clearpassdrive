@@ -90,7 +90,7 @@ export default function CheckoutPage() {
             Complete your enrollment
           </h1>
           <p style={{ color: '#64748b', marginBottom: '32px', fontSize: '0.9rem' }}>
-            One payment. Lifetime access to this course.
+            One payment per citation. Valid for this traffic violation only.
           </p>
 
           {/* Order summary */}

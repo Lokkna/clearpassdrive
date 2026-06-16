@@ -76,3 +76,11 @@ CREATE POLICY "Users can update own citation"
 CREATE POLICY "Service role full access on citations"
   ON citations FOR ALL
   USING (auth.role() = 'service_role');
+
+-- Per-incident enrollment support
+-- Run this to allow multiple enrollments per user (one per citation)
+-- ALTER TABLE enrollments DROP CONSTRAINT enrollments_user_id_key;
+-- ALTER TABLE enrollments ADD COLUMN citation_id UUID REFERENCES citations(id);
+-- ALTER TABLE enrollments ADD COLUMN citation_number TEXT;
+-- Note: The above is additive — existing enrollments are preserved.
+-- For new installations, create enrollments without the UNIQUE constraint on user_id.
