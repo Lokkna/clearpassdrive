@@ -9,6 +9,7 @@ export default function DashboardPage() {
   const [user, setUser] = useState<any>(null)
   const [enrollment, setEnrollment] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [isAdmin, setIsAdmin] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -27,6 +28,19 @@ export default function DashboardPage() {
       if (!enrollment?.paid) { router.push('/checkout'); return }
       setEnrollment(enrollment)
       setLoading(false)
+
+      // Quietly check admin status to decide whether to show the admin
+      // link — actual access control happens server-side in /api/admin/*.
+      try {
+        const { data: sessionData } = await supabase.auth.getSession()
+        const res = await fetch('/api/admin/whoami', {
+          headers: { Authorization: `Bearer ${sessionData?.session?.access_token}` },
+        })
+        const data = await res.json()
+        setIsAdmin(!!data.isAdmin)
+      } catch {
+        setIsAdmin(false)
+      }
     }
     load()
   }, [])
@@ -54,6 +68,7 @@ export default function DashboardPage() {
       <nav style={{ backgroundColor: '#0f2040', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ fontFamily: 'Sora, sans-serif', color: '#f59e0b', fontWeight: 700, fontSize: '1.1rem' }}>ClearPass Drive</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          {isAdmin && <a href="/admin" style={{ color: '#f59e0b', fontSize: '0.85rem', textDecoration: 'none', fontWeight: 600 }}>Admin</a>}
           <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>{user?.email}</span>
           <button onClick={handleSignOut} style={{ color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}>Sign out</button>
         </div>
