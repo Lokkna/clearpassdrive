@@ -19,7 +19,7 @@ export default function TermsPage() {
         <div style={{ color: '#374151', fontSize: '0.95rem', lineHeight: 1.75, display: 'flex', flexDirection: 'column', gap: '28px' }}>
           <section>
             <p>
-              These terms govern your use of ClearPass Drive, operated by NMG Enterprises ("we," "us"). By creating an
+              These terms govern your use of ClearPass Drive, operated by Ndole Media Group ("we," "us"). By creating an
               account, you agree to these terms.
             </p>
           </section>
@@ -76,13 +76,13 @@ export default function TermsPage() {
 
           <section>
             <h2 style={{ fontFamily: 'Sora, sans-serif', color: '#0f2040', fontSize: '1.2rem', fontWeight: 700, marginBottom: '10px' }}>11. Contact us</h2>
-            <p>NMG Enterprises<br />Email: <a href="mailto:support@clearpassdrive.com" style={{ color: '#1e3a6e' }}>support@clearpassdrive.com</a></p>
+            <p>Ndole Media Group<br />Email: <a href="mailto:support@clearpassdrive.com" style={{ color: '#1e3a6e' }}>support@clearpassdrive.com</a></p>
           </section>
         </div>
       </div>
 
       <footer style={{ backgroundColor: '#0a1628', padding: '32px 24px', textAlign: 'center' }}>
-        <p style={{ color: '#334155', fontSize: '0.75rem' }}>© {new Date().getFullYear()} NMG Enterprises. All rights reserved.</p>
+        <p style={{ color: '#334155', fontSize: '0.75rem' }}>© {new Date().getFullYear()} Ndole Media Group. All rights reserved.</p>
       </footer>
     </div>
   )

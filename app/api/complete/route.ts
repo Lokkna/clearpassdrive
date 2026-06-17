@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
             </div>
             <div style="padding: 24px 40px; border-top: 1px solid #e2e8f0; color: #94a3b8; font-size: 0.8rem;">
               <p style="margin: 0;">Questions? Email us at support@clearpassdrive.com</p>
-              <p style="margin: 4px 0 0;">NMG Enterprises · California DMV Licensed TVS License Pending</p>
+              <p style="margin: 4px 0 0;">Ndole Media Group · California DMV Licensed TVS License Pending</p>
             </div>
           </div>
         `,

@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { generateCertificatePDF, buildCertId } from '@/lib/certificate-pdf'
 
 export default function CertificatePage() {
@@ -62,7 +63,7 @@ export default function CertificatePage() {
     <div style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
       {/* Screen controls — hidden when printing */}
       <div className="no-print" style={{ backgroundColor: '#0f2040', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontFamily: 'Sora, sans-serif', color: '#f59e0b', fontWeight: 700 }}>ClearPass Drive</span>
+        <Link href="/" style={{ fontFamily: 'Sora, sans-serif', color: '#f59e0b', fontWeight: 700, textDecoration: 'none' }}>ClearPass Drive</Link>
         <div style={{ display: 'flex', gap: '12px' }}>
           <a href="/dashboard" style={{ color: '#94a3b8', fontSize: '0.9rem', textDecoration: 'none' }}>← Dashboard</a>
           <button onClick={handleDownload} style={{ backgroundColor: '#f59e0b', color: '#0f2040', fontWeight: 700, padding: '8px 20px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.9rem' }}>
@@ -144,11 +145,11 @@ export default function CertificatePage() {
               <div style={{ borderTop: '1.5px solid #0f2040', paddingTop: '8px', width: '180px', margin: '0 auto', color: '#0f2040', fontWeight: 600, fontSize: '0.85rem' }}>
                 Maurice Ndole
               </div>
-              <div style={{ color: '#94a3b8', fontSize: '0.75rem' }}>Director, NMG Enterprises</div>
+              <div style={{ color: '#94a3b8', fontSize: '0.75rem' }}>Director, Ndole Media Group</div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ borderTop: '1.5px solid #0f2040', paddingTop: '8px', width: '180px', margin: '0 auto', color: '#0f2040', fontWeight: 600, fontSize: '0.85rem' }}>
-                NMG Enterprises
+                Ndole Media Group
               </div>
               <div style={{ color: '#94a3b8', fontSize: '0.75rem' }}>TVS License Pending</div>
             </div>

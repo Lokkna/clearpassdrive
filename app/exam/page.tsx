@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { examQuestions, PASSING_SCORE } from '@/lib/course-data'
 
 type Phase = 'loading' | 'intro' | 'question' | 'review' | 'result'
@@ -128,7 +129,7 @@ export default function ExamPage() {
     return (
       <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#0f2040' }}>
         <nav style={{ padding: '14px 24px' }}>
-          <span style={{ fontFamily: 'Sora, sans-serif', color: '#f59e0b', fontWeight: 700, fontSize: '1rem' }}>ClearPass Drive</span>
+          <Link href="/" style={{ fontFamily: 'Sora, sans-serif', color: '#f59e0b', fontWeight: 700, fontSize: '1rem', textDecoration: 'none' }}>ClearPass Drive</Link>
         </nav>
         <div className="flex-1 flex items-center justify-center px-6">
           <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '48px 40px', maxWidth: '520px', width: '100%', textAlign: 'center' }}>

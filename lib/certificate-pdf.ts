@@ -129,18 +129,18 @@ export function generateCertificatePDF(data: CertificateData): jsPDF {
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(12)
   doc.text('Maurice Ndole', sig1X, sigY + 18, { align: 'center' })
-  doc.text('NMG Enterprises', sig2X, sigY + 18, { align: 'center' })
+  doc.text('Ndole Media Group', sig2X, sigY + 18, { align: 'center' })
 
   doc.setTextColor(...LIGHT_SLATE)
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9.5)
-  doc.text('Director, NMG Enterprises', sig1X, sigY + 32, { align: 'center' })
+  doc.text('Director, Ndole Media Group', sig1X, sigY + 32, { align: 'center' })
   doc.text('TVS License Pending', sig2X, sigY + 32, { align: 'center' })
 
   doc.setTextColor(...LIGHT_SLATE)
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8.5)
-  doc.text('NMG Enterprises  ·  Fresno County, California  ·  www.clearpassdrive.com', centerX, pageHeight - 38, { align: 'center' })
+  doc.text('Ndole Media Group  ·  Fresno County, California  ·  www.clearpassdrive.com', centerX, pageHeight - 38, { align: 'center' })
 
   return doc
 }

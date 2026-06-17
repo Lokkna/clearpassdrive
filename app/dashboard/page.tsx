@@ -66,7 +66,7 @@ export default function DashboardPage() {
     <div className="min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
       {/* Nav */}
       <nav style={{ backgroundColor: '#0f2040', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontFamily: 'Sora, sans-serif', color: '#f59e0b', fontWeight: 700, fontSize: '1.1rem' }}>ClearPass Drive</span>
+        <Link href="/" style={{ fontFamily: 'Sora, sans-serif', color: '#f59e0b', fontWeight: 700, fontSize: '1.1rem', textDecoration: 'none' }}>ClearPass Drive</Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           {isAdmin && <a href="/admin" style={{ color: '#f59e0b', fontSize: '0.85rem', textDecoration: 'none', fontWeight: 600 }}>Admin</a>}
           <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>{user?.email}</span>

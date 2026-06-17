@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
               <a href="https://www.clearpassdrive.com/certificate" style="display: inline-block; background: #16a34a; color: #ffffff; font-weight: 700; padding: 12px 28px; border-radius: 8px; text-decoration: none; margin-top: 8px;">View Certificate Online →</a>
             </div>
             <div style="padding: 24px 40px; border-top: 1px solid #e2e8f0; color: #94a3b8; font-size: 0.8rem;">
-              <p style="margin: 0;">NMG Enterprises · California DMV Licensed TVS License Pending</p>
+              <p style="margin: 0;">Ndole Media Group · California DMV Licensed TVS License Pending</p>
               <p style="margin: 4px 0 0;">Questions? Email support@clearpassdrive.com</p>
             </div>
           </div>
