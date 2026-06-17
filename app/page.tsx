@@ -116,6 +116,12 @@ export default function HomePage() {
       <footer style={{ backgroundColor: '#0a1628', padding: '40px 24px', textAlign: 'center' }}>
         <div style={{ fontFamily: 'Sora, sans-serif', color: '#f59e0b', fontWeight: 700, marginBottom: '8px' }}>ClearPass Drive</div>
         <p style={{ color: '#475569', fontSize: '0.8rem', marginBottom: '4px' }}>NMG Enterprises — California DMV-Licensed Traffic Violator School · License Pending</p>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', flexWrap: 'wrap', margin: '16px 0' }}>
+          <Link href="/privacy" style={{ color: '#94a3b8', fontSize: '0.8rem', textDecoration: 'none' }}>Privacy Policy</Link>
+          <Link href="/terms" style={{ color: '#94a3b8', fontSize: '0.8rem', textDecoration: 'none' }}>Terms of Service</Link>
+          <a href="mailto:support@clearpassdrive.com" style={{ color: '#94a3b8', fontSize: '0.8rem', textDecoration: 'none' }}>Contact / Support</a>
+        </div>
+        <p style={{ color: '#475569', fontSize: '0.75rem', letterSpacing: '0.05em', marginBottom: '16px' }}>VISA · MASTERCARD · AMEX · DISCOVER</p>
         <p style={{ color: '#334155', fontSize: '0.75rem' }}>© {new Date().getFullYear()} NMG Enterprises. All rights reserved.</p>
       </footer>
     </div>
