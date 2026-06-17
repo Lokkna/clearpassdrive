@@ -1719,5 +1719,64 @@ export const examQuestions = [
   { id: 17, question: "When driving in fog, you should use:", options: ["High beams", "Hazard lights while moving", "Low beams and reduce speed", "No lights to avoid glare"], correct: 2, chapter: 10 },
   { id: 18, question: "Texting at 55 mph means you travel approximately how far without looking at the road?", options: ["The length of a car", "Half a city block", "The length of a football field", "A quarter mile"], correct: 2, chapter: 4 },
   { id: 19, question: "Which statement about marijuana and driving in California is correct?", options: ["It is legal so safe to drive after using", "A per se BAC limit applies to THC", "DUI marijuana carries same penalties as alcohol DUI", "Only affects driving in large amounts"], correct: 2, chapter: 7 },
-  { id: 20, question: "You are responsible for ensuring all passengers under what age are properly buckled?", options: ["Under 8", "Under 12", "Under 16", "Under 18"], correct: 2, chapter: 6 }
+  { id: 20, question: "You are responsible for ensuring all passengers under what age are properly buckled?", options: ["Under 8", "Under 12", "Under 16", "Under 18"], correct: 2, chapter: 6 },
+  { id: 21, question: "California law requires you to signal at least how many feet before turning in a residential or business area?", options: ["50 feet", "100 feet", "200 feet", "500 feet"], correct: 1, chapter: 1 },
+  { id: 22, question: "The Smith System for defensive driving is built around how many key principles?", options: ["Three", "Four", "Five", "Six"], correct: 2, chapter: 2 },
+  { id: 23, question: "If your vehicle has anti-lock brakes (ABS) and begins to skid, you should:", options: ["Pump the brakes rapidly", "Apply firm, steady pressure and let the ABS pulse", "Take your foot off the brake entirely", "Apply the parking brake instead"], correct: 1, chapter: 2 },
+  { id: 24, question: "Intentionally using your vehicle as a weapon against another person — such as ramming or forcing them off the road — is classified under California law as:", options: ["A simple traffic infraction", "Reckless driving only", "Assault with a deadly weapon, a felony", "A civil matter handled by insurance"], correct: 2, chapter: 3 },
+  { id: 25, question: "A first-offense reckless driving conviction under California Vehicle Code Section 23103 can carry up to how many days in jail?", options: ["30 days", "60 days", "90 days", "180 days"], correct: 2, chapter: 3 },
+  { id: 26, question: "If you believe an angry driver is following you, you should:", options: ["Drive straight home", "Pull over immediately and confront them", "Drive to a populated public place and call 911", "Speed up to lose them"], correct: 2, chapter: 3 },
+  { id: 27, question: "Under California's Graduated Licensing Program, a provisional driver under 18 may not carry passengers under age 20 during their first 12 months of licensure unless:", options: ["No exceptions are ever allowed", "A licensed driver age 25 or older is present in the vehicle", "The trip is under 5 miles", "It only applies after 10 p.m."], correct: 1, chapter: 4 },
+  { id: 28, question: "Which of the following is an effective way to counter dangerous driver fatigue?", options: ["Opening the windows for fresh air", "Turning up the radio", "Splashing water on your face", "Pulling over for a short nap, ideally combined with caffeine"], correct: 3, chapter: 4 },
+  { id: 29, question: "When a school bus has stopped with its red lights flashing, you must remain stopped until:", options: ["You count to ten", "The bus driver waves you through only", "The red lights stop flashing, the stop arm retracts, and the bus begins moving — or the driver signals you to proceed", "Three vehicles ahead of you have passed"], correct: 2, chapter: 5 },
+  { id: 30, question: "California law requires a vehicle's horn to be audible from at least:", options: ["50 feet", "100 feet", "200 feet", "500 feet"], correct: 2, chapter: 6 },
+  { id: 31, question: "After a collision involving injury, death, or more than $1,000 in property damage, you must file an SR-1 report with the DMV within:", options: ["24 hours", "5 days", "10 days", "30 days"], correct: 2, chapter: 6 },
+  { id: 32, question: "When all consequences are factored in — fines, fees, DUI school, attorney costs, and insurance increases — the average first-offense DUI conviction in California typically costs:", options: ["$500 to $1,000", "$2,000 to $5,000", "$10,000 to $25,000", "Under $500"], correct: 2, chapter: 7 },
+  { id: 33, question: "Once triggered by a crash sensor, an airbag fully inflates in approximately:", options: ["3 milliseconds", "30 milliseconds", "300 milliseconds", "3 seconds"], correct: 1, chapter: 8 },
+  { id: 34, question: "Research cited in this course credits Electronic Stability Control (ESC) with reducing fatal single-vehicle crashes by approximately:", options: ["10 percent", "33 percent", "50 percent", "75 percent"], correct: 1, chapter: 8 },
+  { id: 35, question: "For airbag safety, you should maintain at least how much distance between your chest and the steering wheel?", options: ["4 inches", "10 inches", "18 inches", "24 inches"], correct: 1, chapter: 8 },
+  { id: 36, question: "At approximately what speed does a pedestrian struck by a vehicle face roughly a 40 percent risk of fatal injury?", options: ["20 mph", "30 mph", "40 mph", "50 mph"], correct: 1, chapter: 9 },
+  { id: 37, question: "When a school crossing guard holds up a stop sign, you must:", options: ["Proceed slowly if no children are visible", "Stop and remain stopped until the guard signals you to proceed", "Honk to let the guard know you are passing", "Yield only if children are actively in the road"], correct: 1, chapter: 9 },
+  { id: 38, question: "In California, pedestrians account for approximately what share of all traffic fatalities?", options: ["5 percent", "15 percent", "25 percent", "50 percent"], correct: 2, chapter: 9 },
+  { id: 39, question: "When descending a long, steep grade, you should:", options: ["Ride the brake pedal continuously to control speed", "Use engine braking by shifting to a lower gear", "Coast in neutral to save fuel", "Apply the parking brake intermittently"], correct: 1, chapter: 10 },
+  { id: 40, question: "On a hot day, a parked car's interior temperature can rise approximately how much in just 10 minutes?", options: ["5°F", "10°F", "20°F", "40°F"], correct: 2, chapter: 10 }
 ]
+
+// Randomized exam set — drawn fresh on every attempt, first try included.
+// Pulls QUESTIONS_PER_CHAPTER from each of the 10 chapters (so every attempt
+// covers the full curriculum), shuffles question order, and shuffles each
+// question's answer choices (remapping `correct` to match). This keeps a
+// fixed answer key from ever being a complete, shareable artifact: the
+// question set, its order, and each answer's position all vary per attempt.
+const QUESTIONS_PER_CHAPTER = 2
+
+function shuffleArray<T>(input: T[]): T[] {
+  const arr = [...input]
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+  }
+  return arr
+}
+
+export function getRandomExamSet(): typeof examQuestions {
+  const byChapter = new Map<number, typeof examQuestions>()
+  examQuestions.forEach(q => {
+    if (!byChapter.has(q.chapter)) byChapter.set(q.chapter, [])
+    byChapter.get(q.chapter)!.push(q)
+  })
+
+  const drawn: typeof examQuestions = []
+  byChapter.forEach(chapterQuestions => {
+    drawn.push(...shuffleArray(chapterQuestions).slice(0, QUESTIONS_PER_CHAPTER))
+  })
+
+  return shuffleArray(drawn).map(q => {
+    const order = shuffleArray(q.options.map((_, i) => i))
+    return {
+      ...q,
+      options: order.map(i => q.options[i]),
+      correct: order.indexOf(q.correct),
+    }
+  })
+}

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { examQuestions, PASSING_SCORE } from '@/lib/course-data'
+import { getRandomExamSet, PASSING_SCORE } from '@/lib/course-data'
 
 type Phase = 'loading' | 'intro' | 'question' | 'review' | 'result'
 
@@ -11,6 +11,7 @@ export default function ExamPage() {
   const [user, setUser] = useState<any>(null)
   const [enrollment, setEnrollment] = useState<any>(null)
   const [phase, setPhase] = useState<Phase>('loading')
+  const [examSet, setExamSet] = useState<ReturnType<typeof getRandomExamSet>>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [selected, setSelected] = useState<number | null>(null)
@@ -42,6 +43,7 @@ export default function ExamPage() {
   }, [])
 
   function startExam() {
+    setExamSet(getRandomExamSet())
     setCurrentIndex(0)
     setAnswers({})
     setSelected(null)
@@ -54,18 +56,18 @@ export default function ExamPage() {
   }
 
   function nextQuestion() {
-    const q = examQuestions[currentIndex]
+    const q = examSet[currentIndex]
     const newAnswers = { ...answers, [q.id]: selected! }
     setAnswers(newAnswers)
     setSelected(null)
 
-    if (currentIndex + 1 < examQuestions.length) {
+    if (currentIndex + 1 < examSet.length) {
       setCurrentIndex(currentIndex + 1)
     } else {
       // Calculate score and go to review
       let correct = 0
-      examQuestions.forEach(q => { if (newAnswers[q.id] === q.correct) correct++ })
-      const pct = Math.round((correct / examQuestions.length) * 100)
+      examSet.forEach(q => { if (newAnswers[q.id] === q.correct) correct++ })
+      const pct = Math.round((correct / examSet.length) * 100)
       setScore(pct)
       setPhase('review')
     }
@@ -120,8 +122,8 @@ export default function ExamPage() {
     )
   }
 
-  const q = examQuestions[currentIndex]
-  const progress = ((currentIndex) / examQuestions.length) * 100
+  const q = examSet[currentIndex]
+  const progress = ((currentIndex) / examSet.length) * 100
   const passed = score >= PASSING_SCORE
 
   // INTRO
@@ -166,7 +168,7 @@ export default function ExamPage() {
       <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#f8fafc' }}>
         <nav style={{ backgroundColor: '#0f2040', padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontFamily: 'Sora, sans-serif', color: '#f59e0b', fontWeight: 700, fontSize: '1rem' }}>ClearPass Drive — Final Exam</span>
-          <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Question {currentIndex + 1} of {examQuestions.length}</span>
+          <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Question {currentIndex + 1} of {examSet.length}</span>
         </nav>
 
         {/* Progress bar */}
@@ -179,7 +181,7 @@ export default function ExamPage() {
 
             {/* Question number pill */}
             <div style={{ display: 'inline-block', backgroundColor: '#0f2040', color: '#f59e0b', fontSize: '0.8rem', fontWeight: 700, padding: '4px 14px', borderRadius: '20px', marginBottom: '16px' }}>
-              Question {currentIndex + 1} / {examQuestions.length}
+              Question {currentIndex + 1} / {examSet.length}
             </div>
 
             {/* Question card */}
@@ -233,7 +235,7 @@ export default function ExamPage() {
                   cursor: 'pointer', fontSize: '1rem', width: '100%',
                 }}
               >
-                {currentIndex + 1 < examQuestions.length ? 'Next Question →' : 'Review Answers →'}
+                {currentIndex + 1 < examSet.length ? 'Next Question →' : 'Review Answers →'}
               </button>
             )}
           </div>
@@ -244,12 +246,12 @@ export default function ExamPage() {
 
   // REVIEW
   if (phase === 'review') {
-    const correctCount = examQuestions.filter(q => answers[q.id] === q.correct).length
+    const correctCount = examSet.filter(q => answers[q.id] === q.correct).length
     return (
       <div className="min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
         <nav style={{ backgroundColor: '#0f2040', padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontFamily: 'Sora, sans-serif', color: '#f59e0b', fontWeight: 700, fontSize: '1rem' }}>ClearPass Drive — Review</span>
-          <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>{correctCount}/{examQuestions.length} correct</span>
+          <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>{correctCount}/{examSet.length} correct</span>
         </nav>
 
         <div style={{ maxWidth: '720px', margin: '0 auto', padding: '32px 24px' }}>
@@ -259,7 +261,7 @@ export default function ExamPage() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '28px' }}>
-            {examQuestions.map((q, qi) => {
+            {examSet.map((q, qi) => {
               const userAnswer = answers[q.id]
               const isCorrect = userAnswer === q.correct
               return (
@@ -296,7 +298,7 @@ export default function ExamPage() {
           <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', padding: '24px', border: '1px solid #e2e8f0', marginBottom: '20px', textAlign: 'center' }}>
             <div style={{ fontFamily: 'Sora, sans-serif', fontSize: '2.5rem', fontWeight: 800, color: passed ? '#16a34a' : '#dc2626' }}>{score}%</div>
             <p style={{ color: '#64748b', margin: '6px 0 0', fontSize: '0.9rem' }}>
-              {correctCount} of {examQuestions.length} correct · {passed ? 'Passing score ✓' : `Need ${PASSING_SCORE}% to pass`}
+              {correctCount} of {examSet.length} correct · {passed ? 'Passing score ✓' : `Need ${PASSING_SCORE}% to pass`}
             </p>
           </div>
 
