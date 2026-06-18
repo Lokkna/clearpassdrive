@@ -1743,11 +1743,15 @@ export const examQuestions = [
 ]
 
 // Randomized exam set — drawn fresh on every attempt, first try included.
-// Pulls QUESTIONS_PER_CHAPTER from each of the 10 chapters (so every attempt
-// covers the full curriculum), shuffles question order, and shuffles each
-// question's answer choices (remapping `correct` to match). This keeps a
-// fixed answer key from ever being a complete, shareable artifact: the
-// question set, its order, and each answer's position all vary per attempt.
+// Pulls QUESTIONS_PER_CHAPTER from each of the 10 chapters, drawing from a
+// combined pool of the dedicated exam questions AND the chapter knowledge
+// check questions (so a KC question a student already saw at the chapter
+// level is eligible to resurface on the exam — reinforcement, not a leak,
+// since the draw is still random and the option order is reshuffled).
+// Shuffles question order and each question's answer choices (remapping
+// `correct` to match). This keeps a fixed answer key from ever being a
+// complete, shareable artifact: the question set, its order, and each
+// answer's position all vary per attempt.
 const QUESTIONS_PER_CHAPTER = 2
 
 function shuffleArray<T>(input: T[]): T[] {
@@ -1759,14 +1763,15 @@ function shuffleArray<T>(input: T[]): T[] {
   return arr
 }
 
-export function getRandomExamSet(): typeof examQuestions {
-  const byChapter = new Map<number, typeof examQuestions>()
-  examQuestions.forEach(q => {
+export function getRandomExamSet() {
+  const combinedPool = [...examQuestions, ...chapterQuizQuestions]
+  const byChapter = new Map<number, typeof combinedPool>()
+  combinedPool.forEach(q => {
     if (!byChapter.has(q.chapter)) byChapter.set(q.chapter, [])
     byChapter.get(q.chapter)!.push(q)
   })
 
-  const drawn: typeof examQuestions = []
+  const drawn: typeof combinedPool = []
   byChapter.forEach(chapterQuestions => {
     drawn.push(...shuffleArray(chapterQuestions).slice(0, QUESTIONS_PER_CHAPTER))
   })

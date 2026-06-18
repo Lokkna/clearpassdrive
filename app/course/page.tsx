@@ -204,10 +204,11 @@ function CourseContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  async function continueAfterPass() {
+  async function advanceToNextChapter() {
     // Drop back to the reading view first — if the server-side dwell-time
     // check somehow fails (e.g. clock drift), the existing lockError UI
-    // in the reading view is what surfaces it to the student.
+    // in the reading view is what surfaces it to the student. Called both
+    // after a pass and when a student chooses to skip ahead after a fail.
     setQuizPhase('none')
     await markComplete()
   }
@@ -363,17 +364,23 @@ function CourseContent() {
                     <div style={{ backgroundColor: '#fef3c7', color: '#92400e', fontSize: '0.85rem', padding: '10px 14px', borderRadius: '8px', marginBottom: '12px' }}>{lockError}</div>
                   )}
                   {passed ? (
-                    <button onClick={continueAfterPass} disabled={marking}
+                    <button onClick={advanceToNextChapter} disabled={marking}
                       style={{ backgroundColor: marking ? '#94a3b8' : '#0f2040', color: '#ffffff', fontWeight: 700, padding: '14px', borderRadius: '10px', border: 'none', cursor: marking ? 'not-allowed' : 'pointer', fontSize: '1rem', width: '100%' }}>
                       {marking ? 'Saving...' : currentChapter === 10 ? 'Complete Course → Take Exam' : 'Continue to Next Chapter →'}
                     </button>
                   ) : (
-                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                      <button onClick={backToReading} style={{ flex: 1, minWidth: '180px', backgroundColor: '#ffffff', color: '#0f2040', fontWeight: 700, padding: '14px', borderRadius: '10px', border: '2px solid #0f2040', cursor: 'pointer', fontSize: '0.92rem' }}>
-                        ← Review Chapter Material
-                      </button>
-                      <button onClick={retakeQuiz} style={{ flex: 1, minWidth: '180px', backgroundColor: '#f59e0b', color: '#0f2040', fontWeight: 700, padding: '14px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.92rem' }}>
-                        Retake Knowledge Check
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                        <button onClick={backToReading} style={{ flex: 1, minWidth: '180px', backgroundColor: '#ffffff', color: '#0f2040', fontWeight: 700, padding: '14px', borderRadius: '10px', border: '2px solid #0f2040', cursor: 'pointer', fontSize: '0.92rem' }}>
+                          ← Review Chapter Material
+                        </button>
+                        <button onClick={retakeQuiz} style={{ flex: 1, minWidth: '180px', backgroundColor: '#f59e0b', color: '#0f2040', fontWeight: 700, padding: '14px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.92rem' }}>
+                          Retake Knowledge Check
+                        </button>
+                      </div>
+                      <button onClick={advanceToNextChapter} disabled={marking}
+                        style={{ background: 'none', border: 'none', color: '#94a3b8', fontWeight: 600, fontSize: '0.82rem', cursor: marking ? 'not-allowed' : 'pointer', textDecoration: 'underline', padding: '4px', alignSelf: 'center' }}>
+                        {marking ? 'Saving...' : currentChapter === 10 ? 'Skip ahead to the exam anyway →' : 'Skip ahead anyway →'}
                       </button>
                     </div>
                   )}
