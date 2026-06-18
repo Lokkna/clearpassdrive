@@ -40,6 +40,11 @@ export async function POST(req: NextRequest) {
     }
 
     const key = String(chapterId)
+    const allowedChapter = enrollment.current_chapter || 1
+    if (Number(chapterId) > allowedChapter) {
+      return NextResponse.json({ error: 'Chapter is locked — complete earlier chapters first' }, { status: 403 })
+    }
+
     const startedAtStr = enrollment.chapter_started_at?.[key]
     const requiredSeconds = getChapterMinSeconds(Number(chapterId))
 

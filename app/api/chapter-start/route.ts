@@ -30,12 +30,24 @@ export async function POST(req: NextRequest) {
 
     const { data: enrollment, error: fetchError } = await supabaseAdmin
       .from('enrollments')
-      .select('id, user_id, chapter_started_at')
+      .select('id, user_id, chapter_started_at, current_chapter')
       .eq('id', enrollmentId)
       .single()
 
     if (fetchError || !enrollment || enrollment.user_id !== user.id) {
       return NextResponse.json({ error: 'Enrollment not found' }, { status: 404 })
+    }
+
+    // Sequential lock: a chapter's clock can only be started if it's at or
+    // before the student's legitimate frontier (current_chapter). Without
+    // this, a student could open a future chapter via the sidebar or a
+    // direct API call just to "peek," silently pre-starting its clock —
+    // so by the time they legitimately reach it, the wait reads as already
+    // satisfied. This is enforced here (not just hidden in the UI) because
+    // a client-side lock alone doesn't stop a request made from devtools.
+    const allowedChapter = enrollment.current_chapter || 1
+    if (Number(chapterId) > allowedChapter) {
+      return NextResponse.json({ error: 'Chapter is locked — complete earlier chapters first' }, { status: 403 })
     }
 
     const startedAt = { ...(enrollment.chapter_started_at || {}) }

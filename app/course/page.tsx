@@ -39,8 +39,10 @@ function CourseContent() {
       const { data: enrollment } = await supabase.from('enrollments').select('*').eq('user_id', user.id).eq('paid', true).order('created_at', { ascending: false }).limit(1).single()
       if (!enrollment?.paid) { router.push('/checkout'); return }
       setEnrollment(enrollment)
+      const maxAllowed = enrollment.current_chapter || 1
       const chapterParam = searchParams.get('chapter')
-      if (chapterParam) { setCurrentChapter(parseInt(chapterParam)) } else { setCurrentChapter(enrollment.current_chapter || 1) }
+      const requested = chapterParam ? parseInt(chapterParam) : maxAllowed
+      setCurrentChapter(Number.isFinite(requested) && requested > 0 ? Math.min(requested, maxAllowed) : maxAllowed)
       setLoading(false)
     }
     load()
@@ -236,10 +238,13 @@ function CourseContent() {
           {chapters.map(ch => {
             const done = enrollment?.progress?.[ch.id] === true
             const active = ch.id === currentChapter
+            const locked = ch.id > (enrollment?.current_chapter || 1)
             return (
-              <button key={ch.id} onClick={() => { setCurrentChapter(ch.id); window.scrollTo({ top: 0 }) }}
-                style={{ textAlign: 'left', padding: '10px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer', backgroundColor: active ? '#1e3a6e' : 'transparent', color: active ? '#ffffff' : done ? '#16a34a' : '#64748b', fontSize: '0.8rem', fontWeight: active ? 600 : 400, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ flexShrink: 0 }}>{done ? '✓' : ch.id}</span>
+              <button key={ch.id} onClick={() => { if (!locked) { setCurrentChapter(ch.id); window.scrollTo({ top: 0 }) } }}
+                disabled={locked}
+                title={locked ? 'Complete the current chapter to unlock this one' : undefined}
+                style={{ textAlign: 'left', padding: '10px 12px', borderRadius: '8px', border: 'none', cursor: locked ? 'not-allowed' : 'pointer', backgroundColor: active ? '#1e3a6e' : 'transparent', color: active ? '#ffffff' : done ? '#16a34a' : locked ? '#cbd5e1' : '#64748b', fontSize: '0.8rem', fontWeight: active ? 600 : 400, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ flexShrink: 0 }}>{done ? '✓' : locked ? '🔒' : ch.id}</span>
                 <span>{ch.title}</span>
               </button>
             )
