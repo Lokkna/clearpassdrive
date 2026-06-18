@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getChapterMinSeconds } from '@/lib/course-data'
+import { getAdminEmails } from '@/lib/admin'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -40,8 +41,9 @@ export async function POST(req: NextRequest) {
     }
 
     const key = String(chapterId)
+    const isAdmin = !!user.email && getAdminEmails().includes(user.email.toLowerCase())
     const allowedChapter = enrollment.current_chapter || 1
-    if (Number(chapterId) > allowedChapter) {
+    if (!isAdmin && Number(chapterId) > allowedChapter) {
       return NextResponse.json({ error: 'Chapter is locked — complete earlier chapters first' }, { status: 403 })
     }
 
@@ -50,16 +52,21 @@ export async function POST(req: NextRequest) {
 
     // No recorded start — should not happen in normal flow (the client
     // calls /api/chapter-start on load), but fail closed rather than open.
-    if (!startedAtStr) {
+    // Admins are exempt below, but still need a start record to exist so
+    // the rest of the flow (and the UI) has something to read.
+    if (!startedAtStr && !isAdmin) {
       return NextResponse.json(
         { error: 'Chapter not started', requiredSeconds, elapsedSeconds: 0, remainingSeconds: requiredSeconds },
         { status: 400 }
       )
     }
 
-    const elapsedSeconds = Math.floor((Date.now() - new Date(startedAtStr).getTime()) / 1000)
+    const elapsedSeconds = startedAtStr ? Math.floor((Date.now() - new Date(startedAtStr).getTime()) / 1000) : requiredSeconds
 
-    if (elapsedSeconds < requiredSeconds) {
+    // Allowlisted admins skip the actual dwell wait too (not just the
+    // sequential lock), so QA on a personal test account doesn't mean
+    // sitting through a real multi-minute timer for every chapter.
+    if (!isAdmin && elapsedSeconds < requiredSeconds) {
       return NextResponse.json(
         {
           error: 'Minimum reading time not yet met',

@@ -42,9 +42,13 @@ export async function POST(req: NextRequest) {
   if (action === 'complete') {
     const newProgress = { ...(enrollment.progress || {}), [chapterId]: true }
     updates.progress = newProgress
-    if (Number(chapterId) === enrollment.current_chapter && Number(chapterId) < 10) {
-      updates.current_chapter = Number(chapterId) + 1
-    }
+    // Recompute the frontier from the actual progress state rather than
+    // only advancing when chapterId happens to equal the current frontier.
+    // This keeps current_chapter (which the sequential chapter lock relies
+    // on) consistent even if chapters get overridden out of order.
+    let frontier = 1
+    while (frontier <= 10 && newProgress[String(frontier)] === true) frontier++
+    updates.current_chapter = Math.min(frontier, 10)
   }
 
   const { data: updated, error: updateError } = await supabaseAdmin

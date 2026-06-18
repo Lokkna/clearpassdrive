@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { getAdminEmails } from '@/lib/admin'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -45,8 +46,11 @@ export async function POST(req: NextRequest) {
     // so by the time they legitimately reach it, the wait reads as already
     // satisfied. This is enforced here (not just hidden in the UI) because
     // a client-side lock alone doesn't stop a request made from devtools.
+    // Allowlisted admins are exempt on their own enrollment, so QA on a
+    // personal test account doesn't require faking database state.
+    const isAdmin = !!user.email && getAdminEmails().includes(user.email.toLowerCase())
     const allowedChapter = enrollment.current_chapter || 1
-    if (Number(chapterId) > allowedChapter) {
+    if (!isAdmin && Number(chapterId) > allowedChapter) {
       return NextResponse.json({ error: 'Chapter is locked — complete earlier chapters first' }, { status: 403 })
     }
 

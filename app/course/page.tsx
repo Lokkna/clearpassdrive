@@ -26,6 +26,7 @@ function CourseContent() {
   const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({})
   const [quizSelected, setQuizSelected] = useState<number | null>(null)
   const [quizScore, setQuizScore] = useState(0)
+  const [isAdmin, setIsAdmin] = useState(false)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -33,16 +34,33 @@ function CourseContent() {
 
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { router.push('/login'); return }
-      setUser(user)
-      const { data: enrollment } = await supabase.from('enrollments').select('*').eq('user_id', user.id).eq('paid', true).order('created_at', { ascending: false }).limit(1).single()
+      const { data: { user: currentUser } } = await supabase.auth.getUser()
+      if (!currentUser) { router.push('/login'); return }
+      setUser(currentUser)
+
+      const { data: { session } } = await supabase.auth.getSession()
+      let adminStatus = false
+      try {
+        const res = await fetch('/api/admin/whoami', { headers: { Authorization: `Bearer ${session?.access_token}` } })
+        const data = await res.json()
+        adminStatus = !!data.isAdmin
+      } catch {
+        adminStatus = false
+      }
+      setIsAdmin(adminStatus)
+
+      const { data: enrollment } = await supabase.from('enrollments').select('*').eq('user_id', currentUser.id).eq('paid', true).order('created_at', { ascending: false }).limit(1).single()
       if (!enrollment?.paid) { router.push('/checkout'); return }
       setEnrollment(enrollment)
       const maxAllowed = enrollment.current_chapter || 1
       const chapterParam = searchParams.get('chapter')
       const requested = chapterParam ? parseInt(chapterParam) : maxAllowed
-      setCurrentChapter(Number.isFinite(requested) && requested > 0 ? Math.min(requested, maxAllowed) : maxAllowed)
+      const fallback = Number.isFinite(requested) && requested > 0 ? requested : maxAllowed
+      // Admins can jump to any chapter via the URL for QA; everyone else
+      // gets clamped to their legitimate frontier (the real enforcement
+      // for non-admins lives server-side regardless — this is just so the
+      // page doesn't render a confusing state for a locked chapter).
+      setCurrentChapter(adminStatus ? Math.min(fallback, 10) : Math.min(fallback, maxAllowed))
       setLoading(false)
     }
     load()
@@ -225,20 +243,25 @@ function CourseContent() {
   const chapter = chapters.find(c => c.id === currentChapter)!
   const isComplete = enrollment?.progress?.[currentChapter] === true
   const completedCount = enrollment?.progress ? Object.keys(enrollment.progress).filter(k => enrollment.progress[k]).length : 0
-  const locked = !isComplete && (secondsRemaining ?? 1) > 0
+  const locked = !isAdmin && !isComplete && (secondsRemaining ?? 1) > 0
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
       <nav style={{ backgroundColor: '#0f2040', padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 10 }}>
         <Link href="/dashboard" style={{ fontFamily: 'Sora, sans-serif', color: '#f59e0b', fontWeight: 700, fontSize: '1rem', textDecoration: 'none' }}>← Dashboard</Link>
-        <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>{completedCount}/10 chapters complete</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {isAdmin && (
+            <span style={{ backgroundColor: '#f59e0b', color: '#0f2040', fontWeight: 700, fontSize: '0.7rem', padding: '3px 9px', borderRadius: '20px' }}>Admin mode — locks &amp; wait bypassed</span>
+          )}
+          <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>{completedCount}/10 chapters complete</span>
+        </div>
       </nav>
       <div style={{ display: 'flex', maxWidth: '1100px', margin: '0 auto', padding: '0 16px' }}>
         <aside style={{ width: '220px', flexShrink: 0, padding: '24px 16px 24px 0', display: 'flex', flexDirection: 'column', gap: '4px' }} className="hidden md:flex">
           {chapters.map(ch => {
             const done = enrollment?.progress?.[ch.id] === true
             const active = ch.id === currentChapter
-            const locked = ch.id > (enrollment?.current_chapter || 1)
+            const locked = !isAdmin && ch.id > (enrollment?.current_chapter || 1)
             return (
               <button key={ch.id} onClick={() => { if (!locked) { setCurrentChapter(ch.id); window.scrollTo({ top: 0 }) } }}
                 disabled={locked}
