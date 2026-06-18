@@ -3,7 +3,7 @@ import { useEffect, useState, useRef, Suspense } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { chapters, getChapterMinSeconds } from '@/lib/course-data'
+import { chapters, getChapterMinSeconds, getRandomChapterQuiz, CHAPTER_QUIZ_PASSING_SCORE } from '@/lib/course-data'
 import { ChapterDiagram } from '@/lib/chapter-diagrams'
 
 function formatRemaining(totalSeconds: number) {
@@ -20,6 +20,12 @@ function CourseContent() {
   const [marking, setMarking] = useState(false)
   const [secondsRemaining, setSecondsRemaining] = useState<number | null>(null)
   const [lockError, setLockError] = useState<string | null>(null)
+  const [quizPhase, setQuizPhase] = useState<'none' | 'question' | 'review'>('none')
+  const [quizSet, setQuizSet] = useState<ReturnType<typeof getRandomChapterQuiz>>([])
+  const [quizIndex, setQuizIndex] = useState(0)
+  const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({})
+  const [quizSelected, setQuizSelected] = useState<number | null>(null)
+  const [quizScore, setQuizScore] = useState(0)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -45,6 +51,10 @@ function CourseContent() {
     if (loading || !enrollment || !user) return
     if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null }
     setLockError(null)
+    setQuizPhase('none')
+    setQuizIndex(0)
+    setQuizAnswers({})
+    setQuizSelected(null)
 
     const alreadyComplete = enrollment?.progress?.[currentChapter] === true
     if (alreadyComplete) { setSecondsRemaining(0); return }
@@ -128,6 +138,80 @@ function CourseContent() {
     }
   }
 
+  async function recordQuizAttempt(passed: boolean, score: number) {
+    if (!enrollment) return
+    const prior = enrollment.chapter_quiz_attempts?.[currentChapter] || { attempts: 0 }
+    const updatedAttempts = {
+      ...(enrollment.chapter_quiz_attempts || {}),
+      [currentChapter]: {
+        attempts: (prior.attempts || 0) + 1,
+        lastScore: score,
+        passed,
+        lastAttemptAt: new Date().toISOString(),
+      },
+    }
+    try {
+      await supabase.from('enrollments').update({ chapter_quiz_attempts: updatedAttempts }).eq('id', enrollment.id)
+      setEnrollment((prev: any) => ({ ...prev, chapter_quiz_attempts: updatedAttempts }))
+    } catch (err) {
+      // Analytics-only — never block the student's flow over a logging failure.
+      console.error('Failed to record knowledge check attempt:', err)
+    }
+  }
+
+  function startQuiz() {
+    setQuizSet(getRandomChapterQuiz(currentChapter))
+    setQuizIndex(0)
+    setQuizAnswers({})
+    setQuizSelected(null)
+    setQuizPhase('question')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function selectQuizOption(optionIndex: number) {
+    if (quizSelected !== null) return
+    setQuizSelected(optionIndex)
+  }
+
+  function nextQuizQuestion() {
+    const q = quizSet[quizIndex]
+    const newAnswers = { ...quizAnswers, [q.id]: quizSelected! }
+    setQuizAnswers(newAnswers)
+    setQuizSelected(null)
+
+    if (quizIndex + 1 < quizSet.length) {
+      setQuizIndex(quizIndex + 1)
+    } else {
+      let correct = 0
+      quizSet.forEach(q => { if (newAnswers[q.id] === q.correct) correct++ })
+      const pct = Math.round((correct / quizSet.length) * 100)
+      setQuizScore(pct)
+      setQuizPhase('review')
+      recordQuizAttempt(pct >= CHAPTER_QUIZ_PASSING_SCORE, pct)
+    }
+  }
+
+  function retakeQuiz() {
+    setQuizSet(getRandomChapterQuiz(currentChapter))
+    setQuizIndex(0)
+    setQuizAnswers({})
+    setQuizSelected(null)
+    setQuizPhase('question')
+  }
+
+  function backToReading() {
+    setQuizPhase('none')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  async function continueAfterPass() {
+    // Drop back to the reading view first — if the server-side dwell-time
+    // check somehow fails (e.g. clock drift), the existing lockError UI
+    // in the reading view is what surfaces it to the student.
+    setQuizPhase('none')
+    await markComplete()
+  }
+
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f8fafc' }}>
       <div style={{ width: '40px', height: '40px', border: '3px solid #e2e8f0', borderTop: '3px solid #f59e0b', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
@@ -162,37 +246,140 @@ function CourseContent() {
         </aside>
         <main style={{ flex: 1, padding: '32px 0 32px 24px', minWidth: 0 }}>
           <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '40px', border: '1px solid #e2e8f0' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-              <span style={{ backgroundColor: '#f59e0b', color: '#0f2040', fontWeight: 700, fontSize: '0.75rem', padding: '3px 10px', borderRadius: '20px' }}>Chapter {currentChapter} of 10</span>
-              {isComplete && <span style={{ backgroundColor: '#dcfce7', color: '#16a34a', fontWeight: 600, fontSize: '0.75rem', padding: '3px 10px', borderRadius: '20px' }}>Complete</span>}
-            </div>
-            <h1 style={{ fontFamily: 'Sora, sans-serif', color: '#0f2040', fontSize: '1.75rem', fontWeight: 700, marginBottom: '32px' }}>{chapter.title}</h1>
-            <ChapterDiagram chapterId={currentChapter} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '40px' }}>
-              {chapter.content.map((paragraph, i) => (
-                <p key={i} style={{ color: '#374151', lineHeight: 1.8, fontSize: '1rem', margin: 0 }}>{paragraph}</p>
-              ))}
-            </div>
-            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {lockError && (
-                <div style={{ backgroundColor: '#fef3c7', color: '#92400e', fontSize: '0.85rem', padding: '10px 14px', borderRadius: '8px' }}>{lockError}</div>
-              )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-                <button onClick={() => { if (currentChapter > 1) { setCurrentChapter(currentChapter - 1); window.scrollTo({ top: 0 }) } }} disabled={currentChapter === 1}
-                  style={{ color: currentChapter === 1 ? '#cbd5e1' : '#1e3a6e', background: 'none', border: 'none', cursor: currentChapter === 1 ? 'not-allowed' : 'pointer', fontWeight: 600, fontSize: '0.9rem' }}>← Previous</button>
-                {!isComplete ? (
-                  <button onClick={markComplete} disabled={marking || locked}
-                    style={{ backgroundColor: marking ? '#94a3b8' : locked ? '#e2e8f0' : '#f59e0b', color: locked ? '#64748b' : '#0f2040', fontWeight: 700, padding: '12px 28px', borderRadius: '10px', border: 'none', cursor: (marking || locked) ? 'not-allowed' : 'pointer', fontSize: '0.95rem' }}>
-                    {marking ? 'Saving...' : locked ? `Keep reading — ${formatRemaining(secondsRemaining ?? 0)} remaining` : currentChapter === 10 ? 'Complete Course → Take Exam' : 'Mark Complete & Continue →'}
-                  </button>
-                ) : (
-                  <button onClick={() => { if (currentChapter < 10) { setCurrentChapter(currentChapter + 1); window.scrollTo({ top: 0 }) } else { router.push('/exam') } }}
-                    style={{ backgroundColor: '#0f2040', color: '#ffffff', fontWeight: 700, padding: '12px 28px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.95rem' }}>
-                    {currentChapter === 10 ? 'Take Final Exam →' : 'Next Chapter →'}
-                  </button>
-                )}
-              </div>
-            </div>
+            {quizPhase === 'none' && (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                  <span style={{ backgroundColor: '#f59e0b', color: '#0f2040', fontWeight: 700, fontSize: '0.75rem', padding: '3px 10px', borderRadius: '20px' }}>Chapter {currentChapter} of 10</span>
+                  {isComplete && <span style={{ backgroundColor: '#dcfce7', color: '#16a34a', fontWeight: 600, fontSize: '0.75rem', padding: '3px 10px', borderRadius: '20px' }}>Complete</span>}
+                </div>
+                <h1 style={{ fontFamily: 'Sora, sans-serif', color: '#0f2040', fontSize: '1.75rem', fontWeight: 700, marginBottom: '32px' }}>{chapter.title}</h1>
+                <ChapterDiagram chapterId={currentChapter} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '40px' }}>
+                  {chapter.content.map((paragraph, i) => (
+                    <p key={i} style={{ color: '#374151', lineHeight: 1.8, fontSize: '1rem', margin: 0 }}>{paragraph}</p>
+                  ))}
+                </div>
+                <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {lockError && (
+                    <div style={{ backgroundColor: '#fef3c7', color: '#92400e', fontSize: '0.85rem', padding: '10px 14px', borderRadius: '8px' }}>{lockError}</div>
+                  )}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                    <button onClick={() => { if (currentChapter > 1) { setCurrentChapter(currentChapter - 1); window.scrollTo({ top: 0 }) } }} disabled={currentChapter === 1}
+                      style={{ color: currentChapter === 1 ? '#cbd5e1' : '#1e3a6e', background: 'none', border: 'none', cursor: currentChapter === 1 ? 'not-allowed' : 'pointer', fontWeight: 600, fontSize: '0.9rem' }}>← Previous</button>
+                    {!isComplete ? (
+                      <button onClick={startQuiz} disabled={locked}
+                        style={{ backgroundColor: locked ? '#e2e8f0' : '#f59e0b', color: locked ? '#64748b' : '#0f2040', fontWeight: 700, padding: '12px 28px', borderRadius: '10px', border: 'none', cursor: locked ? 'not-allowed' : 'pointer', fontSize: '0.95rem' }}>
+                        {locked ? `Keep reading — ${formatRemaining(secondsRemaining ?? 0)} remaining` : 'Take Knowledge Check →'}
+                      </button>
+                    ) : (
+                      <button onClick={() => { if (currentChapter < 10) { setCurrentChapter(currentChapter + 1); window.scrollTo({ top: 0 }) } else { router.push('/exam') } }}
+                        style={{ backgroundColor: '#0f2040', color: '#ffffff', fontWeight: 700, padding: '12px 28px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.95rem' }}>
+                        {currentChapter === 10 ? 'Take Final Exam →' : 'Next Chapter →'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {quizPhase === 'question' && quizSet[quizIndex] && (() => {
+              const q = quizSet[quizIndex]
+              const progress = (quizIndex / quizSet.length) * 100
+              return (
+                <div>
+                  <span style={{ display: 'inline-block', backgroundColor: '#f59e0b', color: '#0f2040', fontWeight: 700, fontSize: '0.75rem', padding: '3px 10px', borderRadius: '20px', marginBottom: '12px' }}>Knowledge Check — Chapter {currentChapter}</span>
+                  <h1 style={{ fontFamily: 'Sora, sans-serif', color: '#0f2040', fontSize: '1.4rem', fontWeight: 700, marginBottom: '20px' }}>Question {quizIndex + 1} of {quizSet.length}</h1>
+                  <div style={{ height: '6px', backgroundColor: '#e2e8f0', borderRadius: '3px', marginBottom: '28px', overflow: 'hidden' }}>
+                    <div style={{ backgroundColor: '#f59e0b', height: '100%', width: `${progress}%`, transition: 'width 0.3s ease' }} />
+                  </div>
+                  <div style={{ backgroundColor: '#f8fafc', borderRadius: '14px', padding: '28px', marginBottom: '20px' }}>
+                    <p style={{ fontFamily: 'Sora, sans-serif', color: '#0f2040', fontSize: '1.1rem', fontWeight: 600, lineHeight: 1.6, margin: '0 0 24px' }}>{q.question}</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {q.options.map((option, oi) => {
+                        const isSelected = quizSelected === oi
+                        return (
+                          <button key={oi} onClick={() => selectQuizOption(oi)} disabled={quizSelected !== null}
+                            style={{ textAlign: 'left', padding: '14px 18px', borderRadius: '10px', border: `2px solid ${isSelected ? '#0f2040' : '#e2e8f0'}`, backgroundColor: isSelected ? '#0f2040' : '#ffffff', color: isSelected ? '#ffffff' : '#374151', fontSize: '0.95rem', cursor: quizSelected !== null ? 'default' : 'pointer', fontWeight: isSelected ? 600 : 400, transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <span style={{ width: '26px', height: '26px', borderRadius: '50%', flexShrink: 0, border: `2px solid ${isSelected ? '#f59e0b' : '#d1d5db'}`, backgroundColor: isSelected ? '#f59e0b' : 'transparent', color: isSelected ? '#0f2040' : '#9ca3af', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700 }}>
+                              {String.fromCharCode(65 + oi)}
+                            </span>
+                            {option}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                  {quizSelected !== null && (
+                    <button onClick={nextQuizQuestion} style={{ backgroundColor: '#f59e0b', color: '#0f2040', fontWeight: 700, padding: '14px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '1rem', width: '100%' }}>
+                      {quizIndex + 1 < quizSet.length ? 'Next Question →' : 'See Results →'}
+                    </button>
+                  )}
+                </div>
+              )
+            })()}
+
+            {quizPhase === 'review' && (() => {
+              const correctCount = quizSet.filter(q => quizAnswers[q.id] === q.correct).length
+              const passed = quizScore >= CHAPTER_QUIZ_PASSING_SCORE
+              return (
+                <div>
+                  <span style={{ display: 'inline-block', backgroundColor: '#f59e0b', color: '#0f2040', fontWeight: 700, fontSize: '0.75rem', padding: '3px 10px', borderRadius: '20px', marginBottom: '12px' }}>Knowledge Check — Chapter {currentChapter}</span>
+                  <h1 style={{ fontFamily: 'Sora, sans-serif', color: '#0f2040', fontSize: '1.4rem', fontWeight: 700, marginBottom: '20px' }}>{passed ? 'Nice work!' : 'Not quite yet'}</h1>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '24px' }}>
+                    {quizSet.map((q, qi) => {
+                      const userAnswer = quizAnswers[q.id]
+                      const isCorrect = userAnswer === q.correct
+                      return (
+                        <div key={q.id} style={{ backgroundColor: '#ffffff', borderRadius: '12px', padding: '18px', border: `1.5px solid ${isCorrect ? '#86efac' : '#fca5a5'}` }}>
+                          <div style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'flex-start' }}>
+                            <span style={{ width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0, backgroundColor: isCorrect ? '#16a34a' : '#dc2626', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700, marginTop: '1px' }}>
+                              {isCorrect ? '✓' : '✗'}
+                            </span>
+                            <p style={{ fontWeight: 600, color: '#0f2040', margin: 0, fontSize: '0.88rem', lineHeight: 1.5 }}>
+                              <span style={{ color: '#94a3b8', fontWeight: 400 }}>Q{qi + 1}. </span>{q.question}
+                            </p>
+                          </div>
+                          <div style={{ paddingLeft: '32px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            <div style={{ fontSize: '0.82rem', color: isCorrect ? '#16a34a' : '#dc2626', fontWeight: 600 }}>
+                              Your answer: {q.options[userAnswer]}
+                            </div>
+                            {!isCorrect && (
+                              <div style={{ fontSize: '0.82rem', color: '#16a34a', fontWeight: 600 }}>
+                                Correct answer: {q.options[q.correct]}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <div style={{ backgroundColor: '#f8fafc', borderRadius: '12px', padding: '20px', marginBottom: '20px', textAlign: 'center' }}>
+                    <div style={{ fontFamily: 'Sora, sans-serif', fontSize: '2.2rem', fontWeight: 800, color: passed ? '#16a34a' : '#dc2626' }}>{quizScore}%</div>
+                    <p style={{ color: '#64748b', margin: '6px 0 0', fontSize: '0.88rem' }}>
+                      {correctCount} of {quizSet.length} correct · {passed ? 'Passing score ✓' : `Need ${CHAPTER_QUIZ_PASSING_SCORE}% to pass`}
+                    </p>
+                  </div>
+                  {lockError && (
+                    <div style={{ backgroundColor: '#fef3c7', color: '#92400e', fontSize: '0.85rem', padding: '10px 14px', borderRadius: '8px', marginBottom: '12px' }}>{lockError}</div>
+                  )}
+                  {passed ? (
+                    <button onClick={continueAfterPass} disabled={marking}
+                      style={{ backgroundColor: marking ? '#94a3b8' : '#0f2040', color: '#ffffff', fontWeight: 700, padding: '14px', borderRadius: '10px', border: 'none', cursor: marking ? 'not-allowed' : 'pointer', fontSize: '1rem', width: '100%' }}>
+                      {marking ? 'Saving...' : currentChapter === 10 ? 'Complete Course → Take Exam' : 'Continue to Next Chapter →'}
+                    </button>
+                  ) : (
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                      <button onClick={backToReading} style={{ flex: 1, minWidth: '180px', backgroundColor: '#ffffff', color: '#0f2040', fontWeight: 700, padding: '14px', borderRadius: '10px', border: '2px solid #0f2040', cursor: 'pointer', fontSize: '0.92rem' }}>
+                        ← Review Chapter Material
+                      </button>
+                      <button onClick={retakeQuiz} style={{ flex: 1, minWidth: '180px', backgroundColor: '#f59e0b', color: '#0f2040', fontWeight: 700, padding: '14px', borderRadius: '10px', border: 'none', cursor: 'pointer', fontSize: '0.92rem' }}>
+                        Retake Knowledge Check
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
           </div>
         </main>
       </div>
