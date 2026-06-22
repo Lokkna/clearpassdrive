@@ -23,18 +23,21 @@ export default function CheckoutPage() {
       }
       setUserEmail(user.email || '')
 
-      // Check if already paid (get most recent paid enrollment)
-      const { data: enrollments } = await supabase
-        .from('enrollments')
-        .select('paid')
-        .eq('user_id', user.id)
-        .eq('paid', true)
-        .order('created_at', { ascending: false })
-        .limit(1)
+      // Only redirect to /course if NOT explicitly starting a new citation.
+      const isNewCitation = new URLSearchParams(window.location.search).get('new') === '1'
+      if (!isNewCitation) {
+        const { data: enrollments } = await supabase
+          .from('enrollments')
+          .select('paid')
+          .eq('user_id', user.id)
+          .eq('paid', true)
+          .order('created_at', { ascending: false })
+          .limit(1)
 
-      if (enrollments && enrollments.length > 0) {
-        router.push('/course')
-        return
+        if (enrollments && enrollments.length > 0) {
+          router.push('/course')
+          return
+        }
       }
 
       // Check citation intake is complete

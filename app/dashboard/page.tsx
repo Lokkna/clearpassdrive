@@ -19,13 +19,16 @@ export default function DashboardPage() {
       if (!user) { router.push('/login'); return }
       setUser(user)
 
-      const { data: enrollment } = await supabase
+      const { data: enrollments } = await supabase
         .from('enrollments')
         .select('*')
         .eq('user_id', user.id)
-        .single()
+        .eq('paid', true)
+        .order('created_at', { ascending: false })
+        .limit(1)
 
-      if (!enrollment?.paid) { router.push('/checkout'); return }
+      const enrollment = enrollments?.[0] || null
+      if (!enrollment) { router.push('/checkout'); return }
       setEnrollment(enrollment)
       setLoading(false)
 
@@ -108,6 +111,11 @@ export default function DashboardPage() {
           {enrollment?.exam_passed && (
             <Link href="/certificate" style={{ backgroundColor: '#16a34a', color: '#ffffff', fontWeight: 700, padding: '12px 24px', borderRadius: '8px', textDecoration: 'none', fontSize: '0.95rem' }}>
               Download Certificate →
+            </Link>
+          )}
+          {enrollment?.exam_passed && (
+            <Link href="/intake?new=1" style={{ backgroundColor: '#ffffff', color: '#0f2040', fontWeight: 600, padding: '12px 24px', borderRadius: '8px', textDecoration: 'none', fontSize: '0.95rem', border: '2px solid #0f2040' }}>
+              Got another ticket? Enroll again →
             </Link>
           )}
         </div>

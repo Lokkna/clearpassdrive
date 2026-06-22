@@ -48,8 +48,14 @@ export default function IntakePage() {
     async function checkAuth() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { router.push('/register'); return }
-      const { data: enrollment } = await supabase.from('enrollments').select('paid').eq('user_id', user.id).single()
-      if (enrollment?.paid) { router.push('/course'); return }
+      // Only redirect to /course if the user has a paid enrollment AND is NOT
+      // explicitly starting a new citation. The ?new=1 param signals intent to
+      // enroll for a second (or subsequent) incident, so we allow through.
+      const isNewCitation = new URLSearchParams(window.location.search).get('new') === '1'
+      if (!isNewCitation) {
+        const { data: enrollment } = await supabase.from('enrollments').select('paid').eq('user_id', user.id).eq('paid', true).limit(1).single()
+        if (enrollment?.paid) { router.push('/course'); return }
+      }
       setCheckingAuth(false)
     }
     checkAuth()
@@ -80,7 +86,8 @@ export default function IntakePage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { router.push('/register'); return }
 
-      const { error: insertError } = await supabase.from('citations').upsert({
+      const isNewCitation = new URLSearchParams(window.location.search).get('new') === '1'
+      const citationData = {
         user_id: user.id,
         citation_number: citationNumber.trim().toUpperCase(),
         violation_date: violationDate,
@@ -93,10 +100,15 @@ export default function IntakePage() {
         prior_traffic_school_18_months: priorTrafficSchool18Months === 'yes',
         ol767_completed: true,
         ol767_completed_at: new Date().toISOString(),
-      }, { onConflict: 'user_id' })
+      }
+      // New incident: insert a fresh citation row rather than overwriting the
+      // prior one, so each enrollment has its own independently tracked citation.
+      const { error: insertError } = isNewCitation
+        ? await supabase.from('citations').insert(citationData)
+        : await supabase.from('citations').upsert(citationData, { onConflict: 'user_id' })
 
       if (insertError) throw new Error(insertError.message)
-      router.push('/checkout')
+      router.push(isNewCitation ? '/checkout?new=1' : '/checkout')
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.')
       setLoading(false)
