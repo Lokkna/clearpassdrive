@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { chapters, getChapterMinSeconds, getRandomChapterQuiz, CHAPTER_QUIZ_PASSING_SCORE } from '@/lib/course-data'
 import { ChapterDiagram } from '@/lib/chapter-diagrams'
+import { getSectionDiagram, isSectionHeader } from '@/lib/section-diagrams'
 
 function formatRemaining(totalSeconds: number) {
   const m = Math.floor(totalSeconds / 60)
@@ -284,9 +285,22 @@ function CourseContent() {
                 <h1 style={{ fontFamily: 'Sora, sans-serif', color: '#0f2040', fontSize: '1.75rem', fontWeight: 700, marginBottom: '32px' }}>{chapter.title}</h1>
                 <ChapterDiagram chapterId={currentChapter} />
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '40px' }}>
-                  {chapter.content.map((paragraph, i) => (
-                    <p key={i} style={{ color: '#374151', lineHeight: 1.8, fontSize: '1rem', margin: 0 }}>{paragraph}</p>
-                  ))}
+                  {chapter.content.map((paragraph, i) => {
+                    if (isSectionHeader(paragraph)) {
+                      const diagram = getSectionDiagram(paragraph)
+                      return (
+                        <div key={i}>
+                          <h2 style={{ fontFamily: 'Sora, sans-serif', color: '#0f2040', fontSize: '1.15rem', fontWeight: 700, margin: '16px 0 4px', paddingTop: '8px', borderTop: '1px solid #e2e8f0' }}>
+                            {paragraph}
+                          </h2>
+                          {diagram}
+                        </div>
+                      )
+                    }
+                    return (
+                      <p key={i} style={{ color: '#374151', lineHeight: 1.8, fontSize: '1rem', margin: 0 }}>{paragraph}</p>
+                    )
+                  })}
                 </div>
                 <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {lockError && (
