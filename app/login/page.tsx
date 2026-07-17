@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [forgotMode, setForgotMode] = useState(false)
@@ -142,14 +143,19 @@ export default function LoginPage() {
                       Forgot password?
                     </button>
                   </div>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleLogin()}
-                    placeholder="Your password"
-                    style={{ width: '100%', border: '1.5px solid #e2e8f0', borderRadius: '8px', padding: '10px 14px', fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box' }}
-                  />
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && handleLogin()}
+                      placeholder="Your password"
+                      style={{ width: '100%', border: '1.5px solid #e2e8f0', borderRadius: '8px', padding: '10px 44px 10px 14px', fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box' }}
+                    />
+                    <button onClick={() => setShowPassword(p => !p)} tabIndex={-1} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: '1rem', padding: 0, lineHeight: 1 }}>
+                      {showPassword ? '🙈' : '👁️'}
+                    </button>
+                  </div>
                 </div>
                 {error && (
                   <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', padding: '10px 14px', color: '#dc2626', fontSize: '0.85rem' }}>
