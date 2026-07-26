@@ -226,7 +226,7 @@ export const ChapterDiagram = ({ chapterId }: { chapterId: number }) => {
           <circle cx="60" cy="65" r="18" fill="#b45309"/>
           <text x="60" y="70" textAnchor="middle" fontSize="9" fill="#fef3c7" fontFamily="Outfit, sans-serif">LINCOLN</text>
           <text x="60" y="58" textAnchor="middle" fontSize="8" fill="#fef3c7">👤</text>
-          <text x="150" y="45" fontSize="14" fill="#ef4444" fontFamily="Sora, sans-serif" fontWeight="700">REPLACE ✗</text>
+          <text x="180" y="45" fontSize="14" fill="#ef4444" fontFamily="Sora, sans-serif" fontWeight="700" textAnchor="middle">REPLACE ×</text>
           <text x="150" y="65" fontSize="11" fill="#94a3b8" fontFamily="Outfit, sans-serif">Lincoln's head</text>
           <text x="150" y="80" fontSize="11" fill="#94a3b8" fontFamily="Outfit, sans-serif">is fully visible</text>
           <text x="150" y="95" fontSize="11" fill="#94a3b8" fontFamily="Outfit, sans-serif">above tread</text>
